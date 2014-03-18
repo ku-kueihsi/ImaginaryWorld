@@ -39,7 +39,7 @@ LOCAL_C_INCLUDES += $(ANDROID_SYSROOT)/include/
 
 LOCAL_MODULE := main
 
-LOCAL_SRC_FILES := main.cpp
+LOCAL_SRC_FILES := main.cpp SDL_android_main.c
 
 LOCAL_STATIC_LIBRARIES := SDL assimp libpng
 LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv1_CM -lGLESv2 -lEGL -landroid

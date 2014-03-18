@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     if(SDL_CreateWindowAndRenderer(0, 0, 0, &window, &renderer) < 0)
         exit(2);
 
-	Sprite sprite = LoadSprite("image.bmp", renderer);
+	Sprite sprite = LoadSprite("SDL_logo.bmp", renderer);
     if(sprite.texture == NULL)
         exit(2);
 
