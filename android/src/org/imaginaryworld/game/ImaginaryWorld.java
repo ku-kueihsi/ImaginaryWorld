@@ -1,4 +1,4 @@
-package com.gamemaker.game;
+package org.imaginaryworld.game;
 
 import org.libsdl.app.SDLActivity;
 
@@ -6,4 +6,4 @@ import org.libsdl.app.SDLActivity;
     * A sample wrapper class that just calls SDLActivity
      */
 
-public class MyGame extends SDLActivity { }
+public class ImaginaryWorld extends SDLActivity { }
