@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="c,cpp">
+<includepath>${ANDROID_NDK}/toolchains/llvm-3.4/prebuilt/windows-x86_64/lib/clang/3.4/include</includepath>
+<includepath>${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/libcxx/include/</includepath>
+<includepath>${ANDROID_NDK}/platforms/android-19/arch-arm/usr/include/</includepath>
+<includepath>${ANDROID_TOOLCHAIN}/include/</includepath>
+<includepath>${JAVA_HOME}/include/</includepath>
+<includepath>${ANDROID_TOOLCHAIN}/include/SDL2/</includepath>
+
+</language>
+</section>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="c,cpp">
+
+</language>
+</section>
+</cdtprojectproperties>

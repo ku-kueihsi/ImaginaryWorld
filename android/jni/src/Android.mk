@@ -41,7 +41,8 @@ LOCAL_MODULE := main
 
 COMMON := ../../../common/
 
-LOCAL_SRC_FILES := 	$(COMMON)/main.cpp SDL_android_main.c
+LOCAL_SRC_FILES := 	SDL_android_main.c \
+					$(COMMON)/main.cpp
 					 
 
 LOCAL_STATIC_LIBRARIES := SDL assimp libpng

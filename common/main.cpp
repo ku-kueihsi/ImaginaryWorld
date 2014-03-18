@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 typedef struct Sprite
 {
