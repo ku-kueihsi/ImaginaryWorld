@@ -376,49 +376,7 @@ GLuint LoadShader(FILE * vfile, FILE * ffile) {
 }
 
 static void create_shaders(void) {
-  Assimp::Importer importer;
-
-//	static const char *fragShaderText = "precision mediump float;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_FragColor = v_color;\n"
-//			"}\n";
-//	static const char *vertShaderText = "precision mediump float;\n"
-//			"uniform mat4 modelviewProjection;\n"
-//			"attribute vec4 pos;\n"
-//			"attribute vec4 color;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_Position = modelviewProjection * pos;\n"
-//			"   v_color = color;\n"
-//			"}\n";
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s", vertShaderText);
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s", fragShaderText);
-//	GLuint fragShader, vertShader, program;
 	GLint stat;
-
-//	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-//	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
-//	glCompileShader(fragShader);
-//	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
-//	if (!stat) {
-////      printf("Error: fragment shader did not compile!\n");
-//		exit(1);
-//	}
-//
-//	vertShader = glCreateShader(GL_VERTEX_SHADER);
-//	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
-//	glCompileShader(vertShader);
-//	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
-//	if (!stat) {
-////      printf("Error: vertex shader did not compile!\n");
-//		exit(1);
-//	}
-//
-//
-//	program = glCreateProgram();
-//	glAttachShader(program, fragShader);
-//	glAttachShader(program, vertShader);
 
 	GLuint program = LoadShader(vertshader_file, fragshader_file);
 	glLinkProgram(program);
@@ -544,8 +502,8 @@ int main(int argc, char * argv[])
 	on_surface_changed(WINWIDTH, WINHEIGHT);
 //
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
-	const GLfloat kTimePerTick = 1 / 60.0f;
+//	std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
+//	const GLfloat kTimePerTick = 1 / 60.0f;
 
 	bool exit = false;
 	while (!exit) {
@@ -556,19 +514,6 @@ int main(int argc, char * argv[])
 			switch (event.type) {
 			case SDL_KEYDOWN:
 			{
-				//                    {
-					//                        //checks if a key is being remapped and prints what the remapping is
-				//                        if (event.key.keysym.scancode != SDL_GetScancodeFromKey(event.key.keysym.sym)) {
-				//                            printf("Physical %s key acting as %s key",
-				//                                    SDL_GetScancodeName(event.key.keysym.scancode),
-				//                                    SDL_GetKeyName(event.key.keysym.sym));
-				//                            exit = true;
-				//                        }
-				//                    }
-				//                    printf("Physical %s key acting as %s key",
-				//                            SDL_GetScancodeName(event.key.keysym.scancode),
-				//                            SDL_GetKeyName(event.key.keysym.sym));
-				//                    //                    if (event.key.keysym.sym == SDLK_ESCAPE) {
 				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 					exit = true;
 				}else if (event.key.keysym.scancode == SDL_SCANCODE_D) {
@@ -589,19 +534,11 @@ int main(int argc, char * argv[])
 			}
 			}
 		}
-        //draw();
-//		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-//		glClear(GL_COLOR_BUFFER_BIT);
 		on_draw_frame();
 		SDL_GL_SwapWindow(window);
 
 	}
-	//    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-	//    glClear(GL_COLOR_BUFFER_BIT);
-	//    SDL_GL_SwapWindow(window);
 
-	// done
-	//    SDL_Delay(2000);
 	SDL_GL_DeleteContext(glcontext);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
