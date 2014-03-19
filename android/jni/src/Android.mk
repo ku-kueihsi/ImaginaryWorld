@@ -43,7 +43,11 @@ LOCAL_C_INCLUDES += $(COMMON)/
 LOCAL_MODULE := main
 
 LOCAL_SRC_FILES := 	SDL_android_main.c \
-					$(COMMON)/main.cpp
+					$(COMMON)/main.cpp \
+					$(COMMON)/gl_tools.cpp \
+					$(COMMON)/data_utils.cpp \
+					$(COMMON)/image.cpp \
+					$(COMMON)/mesh.cpp 
 					 
 
 LOCAL_STATIC_LIBRARIES := SDL assimp libpng

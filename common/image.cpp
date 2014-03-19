@@ -8,7 +8,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace glw;
+using namespace glTools;
 
 struct DataHandle {
     const png_byte* data;

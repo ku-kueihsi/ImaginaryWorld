@@ -500,7 +500,7 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
 {
     assert(pScene);
     //mMeshPtrList.resize(pScene->mNumMeshes);
-    for (int i = 0; i < pScene->mNumMeshes; ++i){
+    for (unsigned int i = 0; i < pScene->mNumMeshes; ++i){
         const aiMesh * pMesh = pScene->mMeshes[i];
         //vector<GLfloat > vertexData(pMesh->mNumVertices * 8);
         vector<GLfloat > positions(pMesh->mNumVertices * 3);
@@ -514,13 +514,13 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
 
         assert(pMesh->HasPositions() && pMesh->HasNormals());
 
-        for (int j = 0; j < pMesh->mNumVertices; ++j) {
+        for (unsigned int j = 0; j < pMesh->mNumVertices; ++j) {
             //cout << pMesh->mVertices[j].x << " " << pMesh->mVertices[j].y << " " << pMesh->mVertices[j].z << endl;
             //outf << "v " << pMesh->mVertices[j].x << " " << pMesh->mVertices[j].y << " " << pMesh->mVertices[j].z << "\n";
 
             //pos
             {
-                int offset = j * 3;
+            	unsigned int offset = j * 3;
                 positions[offset] = pMesh->mVertices[j].x;
                 positions[offset + 1] = pMesh->mVertices[j].y;
                 positions[offset + 2] = pMesh->mVertices[j].z;
@@ -548,11 +548,11 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
         }
 
         //bone indices and weights
-        for (int j = 0; j < pMesh->mNumBones; ++j){
+        for (unsigned int j = 0; j < pMesh->mNumBones; ++j){
             const aiBone *pBone = pMesh->mBones[j];
             string boneName(pBone->mName.data);
             GLubyte boneIndex = mAnimationTree.mAnimationMap[boneName];
-            for (int k = 0; k < pBone->mNumWeights; ++k){
+            for (unsigned int k = 0; k < pBone->mNumWeights; ++k){
                 const aiVertexWeight *pWeight = pBone->mWeights + k;
                 if (boneCounts[pWeight->mVertexId] < MAX_BONE_WEIGHTS){
                     boneIds[pWeight->mVertexId * MAX_BONE_WEIGHTS+ boneCounts[pWeight->mVertexId]] = boneIndex;
@@ -573,11 +573,11 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
 
 
 
-        for (int j = 0; j < pMesh->mNumFaces; ++j){
+        for (unsigned int j = 0; j < pMesh->mNumFaces; ++j){
             const aiFace& face = pMesh->mFaces[j];
             assert(face.mNumIndices == 3);
             int offset = j * 3;
-            for (int k = 0; k < face.mNumIndices; ++k){
+            for (unsigned int k = 0; k < face.mNumIndices; ++k){
                 indexData[offset + k] = face.mIndices[k];
             }
         }
@@ -624,7 +624,7 @@ void RenderUnit::DrawOn()
     std::chrono::duration<double> deltaTime = mCurrentTimeInSecond-mInitTimeInSecond;
     GLfloat time = fmod(deltaTime.count(), mAnimationTree.mAction.duration);
     mAnimationTree.UpdateAnimation(time);
-    for (int i = 0; i < mAnimationTree.mAction.animationList.size(); ++i)
+    for (unsigned int i = 0; i < mAnimationTree.mAction.animationList.size(); ++i)
     {
 //        GLMatrix4f testm = GLMatrix4f::Identity();
 //        GLMatrix4f testm = mAnimationTree.mAction.animationList[i].finalTransformation;
@@ -920,7 +920,7 @@ void UnitTree::BuildFromAssimpRecursive(UnitNode *&pNode, const aiNode *pAiNode)
     //pNode->mTransformation = pAiNode->mTransformation
     GLMatrix4fFromAssimp(pNode->mTransformation, pAiNode->mTransformation);
     pNode->mChildren.reserve(pAiNode->mNumChildren);
-    for (int i = 0; i < pAiNode->mNumChildren; ++i){
+    for (unsigned int i = 0; i < pAiNode->mNumChildren; ++i){
         UnitNode *tmpNode = NULL;
         BuildFromAssimpRecursive(tmpNode, pAiNode->mChildren[i]);
         pNode->mChildren.push_back(tmpNode);
@@ -950,14 +950,14 @@ void UnitTree::InitAction(const aiScene *pScene){
     }
     mAction.duration = pAnimation->mDuration * mAction.timePerTick;
     mAction.animationList.reserve(pAnimation->mNumChannels);
-    for (int i = 0; i < pAnimation->mNumChannels; ++i){
+    for (unsigned int i = 0; i < pAnimation->mNumChannels; ++i){
         const aiNodeAnim *pNodeAnim = pAnimation->mChannels[i];
         string nodeName(pNodeAnim->mNodeName.data);
         mAnimationMap[nodeName] = i;
         //fill translations
 //        mAction.animationList[i].translationSamples.resize(pNodeAnim->mNumPositionKeys);
         vector<TranslationSample > translationSamples;
-        for (int j = 0; j < pNodeAnim->mNumPositionKeys; ++j){
+        for (unsigned int j = 0; j < pNodeAnim->mNumPositionKeys; ++j){
             const aiVectorKey *pKey = pNodeAnim->mPositionKeys + j;
             TranslationSample sample;
             sample.time = pKey->mTime * mAction.timePerTick;
@@ -967,7 +967,7 @@ void UnitTree::InitAction(const aiScene *pScene){
 
         //file quaternions
         vector<QuaternionSample > quaternionSamples;
-        for (int j = 0; j < pNodeAnim->mNumRotationKeys; ++j){
+        for (unsigned int j = 0; j < pNodeAnim->mNumRotationKeys; ++j){
             const aiQuatKey *pKey = pNodeAnim->mRotationKeys + j;
             QuaternionSample sample;
             sample.time = pKey->mTime * mAction.timePerTick;
@@ -977,7 +977,7 @@ void UnitTree::InitAction(const aiScene *pScene){
 
         //file scale
         vector<ScaleSample > scaleSamples;
-        for (int j = 0; j < pNodeAnim->mNumScalingKeys; ++j){
+        for (unsigned int j = 0; j < pNodeAnim->mNumScalingKeys; ++j){
             const aiVectorKey *pKey = pNodeAnim->mScalingKeys + j;
             ScaleSample sample;
             sample.time = pKey->mTime * mAction.timePerTick;
@@ -1001,9 +1001,9 @@ void UnitTree::InitAction(const aiScene *pScene){
 
     //init offset transformations
     unordered_map<string, bool> tmpBoneMap;
-    for (int i = 0; i < pScene->mNumMeshes; ++i){
+    for (unsigned int i = 0; i < pScene->mNumMeshes; ++i){
         const aiMesh *pMesh = pScene->mMeshes[i];
-        for (int j = 0; j < pMesh->mNumBones; ++j){
+        for (unsigned int j = 0; j < pMesh->mNumBones; ++j){
             const aiBone *pBone = pMesh->mBones[j];
             string boneName(pBone->mName.data);
             if (tmpBoneMap.find(boneName) == tmpBoneMap.end()){

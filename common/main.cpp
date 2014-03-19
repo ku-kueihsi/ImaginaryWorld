@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <chrono>
 #include <thread>
+#include "platform_gl.h" //OpenGL
 
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>       // Output data structure
@@ -18,33 +19,36 @@
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengles2.h"
-//#include <android/log.h>
+#include "gl_tools.h"
 
 using namespace std;
 using namespace Eigen;
 
-#define WINWIDTH 1280
-#define WINHEIGHT 800
+//#define WINWIDTH 1280
+//#define WINHEIGHT 800
 
-static void sdldie(const char *msg)
-{
-	printf("%s: %s\n", msg, SDL_GetError());
-	SDL_Quit();
-	exit(1);
-}
+int winWidth = 1280;
+int winHeight = 800;
 
-static void checkSDLError(int line = -1)
-{
-#ifndef NDEBUG
-	const char *error = SDL_GetError();
-	if (*error != '\0') {
-		printf("SDL Error: %s\n", error);
-		if (line != -1)
-			printf(" + line: %i\n", line);
-		SDL_ClearError();
-	}
-#endif
-}
+//static void sdldie(const char *msg)
+//{
+//	printf("%s: %s\n", msg, SDL_GetError());
+//	SDL_Quit();
+//	exit(1);
+//}
+//
+//static void checkSDLError(int line = -1)
+//{
+//#ifndef NDEBUG
+//	const char *error = SDL_GetError();
+//	if (*error != '\0') {
+//		printf("SDL Error: %s\n", error);
+//		if (line != -1)
+//			printf(" + line: %i\n", line);
+//		SDL_ClearError();
+//	}
+//#endif
+//}
 
 #define EPS 0.00001
 //int testf() {
@@ -83,7 +87,7 @@ size_t filelen(FILE * pfile) {
 
 //GL global
 static GLfloat view_rotx = 0.0; // view_roty = 0.0;
-static FILE * vertshader_file = NULL, *fragshader_file = NULL;
+//static FILE * vertshader_file = NULL, *fragshader_file = NULL;
 
 static GLint u_matrix = -1;
 static GLint attr_pos = 0, attr_color = 1;
@@ -94,17 +98,17 @@ static GLint screen_height = 0;
 static GLuint VBOs[4];
 //end of GL global
 
-void set_vertshader_file(FILE * pfile) {
-	vertshader_file = pfile;
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(vertshader_file));
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", vertshader_file);
-}
-
-void set_fragshader_file(FILE * pfile) {
-	fragshader_file = pfile;
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(fragshader_file));
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", fragshader_file);
-}
+//void set_vertshader_file(FILE * pfile) {
+//	vertshader_file = pfile;
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(vertshader_file));
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", vertshader_file);
+//}
+//
+//void set_fragshader_file(FILE * pfile) {
+//	fragshader_file = pfile;
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(fragshader_file));
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", fragshader_file);
+//}
 
 
 
@@ -323,70 +327,70 @@ static void draw(void) {
 
 }
 
-GLuint LoadShader(FILE * vfile, FILE * ffile) {
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
-//	if (!vfile || !ffile) {
+//GLuint LoadShader(FILE * vfile, FILE * ffile) {
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
+////	if (!vfile || !ffile) {
+////		exit(1);
+////	}
+////	size_t len;
+////	len = filelen(vfile);
+////	char * vertShaderText = new char[len + 1];
+////	fread(vertShaderText, len, sizeof(char), vfile);
+////	vertShaderText[len] = '\0';
+////
+////	len = filelen(ffile);
+////	char * fragShaderText = new char[len + 1];
+////	fread(fragShaderText, len, sizeof(char), ffile);
+////	fragShaderText[len] = '\0';
+//
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
+////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
+//
+//
+//	static const char *fragShaderText = "precision mediump float;\n"
+//			"varying vec4 v_color;\n"
+//			"void main() {\n"
+//			"   gl_FragColor = v_color;\n"
+//			"}\n";
+//	static const char *vertShaderText = "precision mediump float;\n"
+//			"uniform mat4 modelviewProjection;\n"
+//			"attribute vec4 pos;\n"
+//			"attribute vec4 color;\n"
+//			"varying vec4 v_color;\n"
+//			"void main() {\n"
+//			"   gl_Position = modelviewProjection * pos;\n"
+//			"   v_color = color;\n"
+//			"}\n";
+//
+//	GLuint fragShader, vertShader, program;
+//	GLint stat;
+//
+//	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+//	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
+//	glCompileShader(fragShader);
+//	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
+//	if (!stat) {
+//		//      printf("Error: fragment shader did not compile!\n");
 //		exit(1);
 //	}
-//	size_t len;
-//	len = filelen(vfile);
-//	char * vertShaderText = new char[len + 1];
-//	fread(vertShaderText, len, sizeof(char), vfile);
-//	vertShaderText[len] = '\0';
 //
-//	len = filelen(ffile);
-//	char * fragShaderText = new char[len + 1];
-//	fread(fragShaderText, len, sizeof(char), ffile);
-//	fragShaderText[len] = '\0';
-
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
-
-
-	static const char *fragShaderText = "precision mediump float;\n"
-			"varying vec4 v_color;\n"
-			"void main() {\n"
-			"   gl_FragColor = v_color;\n"
-			"}\n";
-	static const char *vertShaderText = "precision mediump float;\n"
-			"uniform mat4 modelviewProjection;\n"
-			"attribute vec4 pos;\n"
-			"attribute vec4 color;\n"
-			"varying vec4 v_color;\n"
-			"void main() {\n"
-			"   gl_Position = modelviewProjection * pos;\n"
-			"   v_color = color;\n"
-			"}\n";
-
-	GLuint fragShader, vertShader, program;
-	GLint stat;
-
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
-	glCompileShader(fragShader);
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: fragment shader did not compile!\n");
-		exit(1);
-	}
-
-	vertShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
-	glCompileShader(vertShader);
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: vertex shader did not compile!\n");
-		exit(1);
-	}
-
-	program = glCreateProgram();
-	glAttachShader(program, fragShader);
-	glAttachShader(program, vertShader);
-
-//	delete vertShaderText;
-//	delete fragShaderText;
-	return program;
-}
+//	vertShader = glCreateShader(GL_VERTEX_SHADER);
+//	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
+//	glCompileShader(vertShader);
+//	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
+//	if (!stat) {
+//		//      printf("Error: vertex shader did not compile!\n");
+//		exit(1);
+//	}
+//
+//	program = glCreateProgram();
+//	glAttachShader(program, fragShader);
+//	glAttachShader(program, vertShader);
+//
+////	delete vertShaderText;
+////	delete fragShaderText;
+//	return program;
+//}
 
 GLuint LoadShader(SDL_RWops * vfile, SDL_RWops * ffile) {
 //	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
@@ -599,19 +603,29 @@ extern "C" {
 #endif
 int main(int argc, char * argv[])
 {
+	UNUSED(argc);
+	UNUSED(argv);
 	// init sdl
 	SDL_Init(SDL_INIT_VIDEO);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, WINWIDTH, WINHEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+//	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, WINWIDTH, WINHEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
+
 	//auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	LOG_PRINT("test", "%d\n", winWidth);
+	LOG_PRINT("test", "%d\n", winHeight);
+
 
 	if (window == 0)
 	{
 		SDL_Quit();
 		return false;
 	}
+	SDL_GetWindowSize(window, &winWidth, &winHeight);
+	LOG_PRINT("test", "%d\n", winWidth);
+	LOG_PRINT("test", "%d\n", winHeight);
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
 	auto glcontext = SDL_GL_CreateContext(window);
 
@@ -619,14 +633,14 @@ int main(int argc, char * argv[])
 	//        printf("%s\n", glGetString(GL_VERSION));
 	//        printf("OpenGL version too low.\n");
 	//    }
-	checkSDLError(__LINE__);
+//	checkSDLError(__LINE__);
 
 	// raw gl code
 	glGetString(GL_VERSION);
 	printf("%s\n", glGetString(GL_VERSION));
 
 	on_surface_created();
-	on_surface_changed(WINWIDTH, WINHEIGHT);
+	on_surface_changed(winWidth, winHeight);
 //
 
 //	std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
