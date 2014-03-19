@@ -18,7 +18,7 @@
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengles2.h"
-#include <android/log.h>
+//#include <android/log.h>
 
 using namespace std;
 using namespace Eigen;
@@ -394,8 +394,8 @@ GLuint LoadShader(SDL_RWops * vfile, SDL_RWops * ffile) {
 	SDL_RWread(ffile, fragShaderText, sizeof(char), len);
 	fragShaderText[len] = '\0';
 
-	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
-	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
+//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
+//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
 
 
 //	static const char *fragShaderText = "precision mediump float;\n"
