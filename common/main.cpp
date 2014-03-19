@@ -18,6 +18,7 @@
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengles2.h"
+#include <android/log.h>
 
 using namespace std;
 using namespace Eigen;
@@ -375,10 +376,89 @@ GLuint LoadShader(FILE * vfile, FILE * ffile) {
 	return program;
 }
 
+GLuint LoadShader(SDL_RWops * vfile, SDL_RWops * ffile) {
+//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
+	if (!vfile || !ffile) {
+		exit(1);
+	}
+	size_t len;
+	len = SDL_RWseek(vfile, 0, SEEK_END);
+	SDL_RWseek(vfile, 0, SEEK_SET);
+	char * vertShaderText = new char[len + 1];
+	SDL_RWread(vfile, vertShaderText, sizeof(char), len);
+	vertShaderText[len] = '\0';
+
+	len = SDL_RWseek(ffile, 0, SEEK_END);
+	SDL_RWseek(ffile, 0, SEEK_SET);
+	char * fragShaderText = new char[len + 1];
+	SDL_RWread(ffile, fragShaderText, sizeof(char), len);
+	fragShaderText[len] = '\0';
+
+	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
+	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
+
+
+//	static const char *fragShaderText = "precision mediump float;\n"
+//			"varying vec4 v_color;\n"
+//			"void main() {\n"
+//			"   gl_FragColor = v_color;\n"
+//			"}\n";
+//	static const char *vertShaderText = "precision mediump float;\n"
+//			"uniform mat4 modelviewProjection;\n"
+//			"attribute vec4 pos;\n"
+//			"attribute vec4 color;\n"
+//			"varying vec4 v_color;\n"
+//			"void main() {\n"
+//			"   gl_Position = modelviewProjection * pos;\n"
+//			"   v_color = color;\n"
+//			"}\n";
+
+	GLuint fragShader, vertShader, program;
+	GLint stat;
+
+	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
+	glCompileShader(fragShader);
+	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
+	if (!stat) {
+		//      printf("Error: fragment shader did not compile!\n");
+		exit(1);
+	}
+
+	vertShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
+	glCompileShader(vertShader);
+	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
+	if (!stat) {
+		//      printf("Error: vertex shader did not compile!\n");
+		exit(1);
+	}
+
+	program = glCreateProgram();
+	glAttachShader(program, fragShader);
+	glAttachShader(program, vertShader);
+
+	delete vertShaderText;
+	delete fragShaderText;
+	return program;
+}
+
 static void create_shaders(void) {
 	GLint stat;
 
-	GLuint program = LoadShader(vertshader_file, fragshader_file);
+	SDL_RWops *vfile = NULL;
+	SDL_RWops *ffile = NULL;
+	vfile = SDL_RWFromFile("simplevert.glsl", "r");
+	ffile = SDL_RWFromFile("simplefrag.glsl", "r");
+	if (!vfile || !ffile){
+		exit(1);
+	}
+
+	GLuint program = LoadShader(vfile, ffile);
+
+	SDL_RWclose(ffile);
+	SDL_RWclose(vfile);
+
 	glLinkProgram(program);
 
 	glGetProgramiv(program, GL_LINK_STATUS, &stat);
