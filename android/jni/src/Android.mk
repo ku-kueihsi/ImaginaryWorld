@@ -33,13 +33,14 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
+COMMON := ../../../common/
+
 LOCAL_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/
 LOCAL_C_INCLUDES += $(ANDROID_TOOLCHAIN)/include/eigen3/
 LOCAL_C_INCLUDES += $(ANDROID_SYSROOT)/include/
+LOCAL_C_INCLUDES += $(COMMON)/
 
 LOCAL_MODULE := main
-
-COMMON := ../../../common/
 
 LOCAL_SRC_FILES := 	SDL_android_main.c \
 					$(COMMON)/main.cpp
