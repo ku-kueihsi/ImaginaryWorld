@@ -59,6 +59,18 @@ static void checkSDLError(int line = -1)
 typedef Matrix<GLfloat, 4, 4, ColMajor> GLmatrix4f;
 typedef Matrix<GLfloat, 4, 1, ColMajor> GLvector4f;
 
+string fileToString(const string fileName){
+	SDL_RWops *file = SDL_RWFromFile(fileName.c_str(), "r");
+	size_t len = SDL_RWseek(file, 0, SEEK_END);
+	SDL_RWseek(file, 0, SEEK_SET);
+	string fileString;
+	fileString.reserve(len + 1);
+	SDL_RWread(file,  &fileString[0], sizeof(char), len);
+	fileString[len] = '\0';
+	SDL_RWclose(file);
+	return fileString;
+}
+
 size_t filelen(FILE * pfile) {
 	if (!pfile) {
 		return 0;
@@ -443,21 +455,56 @@ GLuint LoadShader(SDL_RWops * vfile, SDL_RWops * ffile) {
 	return program;
 }
 
-static void create_shaders(void) {
+GLuint LoadShader(const string vFileName, const string fFileName) {
+	string vText = fileToString(vFileName);
+	string fText = fileToString(fFileName);
+
+    const GLchar *kVertexShader = vText.c_str();
+    const GLchar *kFragmentShader = fText.c_str();
+
+	GLuint fragShader, vertShader, program;
 	GLint stat;
 
-	SDL_RWops *vfile = NULL;
-	SDL_RWops *ffile = NULL;
-	vfile = SDL_RWFromFile("simplevert.glsl", "r");
-	ffile = SDL_RWFromFile("simplefrag.glsl", "r");
-	if (!vfile || !ffile){
+	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragShader, 1, (const char **) &kFragmentShader, NULL);
+	glCompileShader(fragShader);
+	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
+	if (!stat) {
+		//      printf("Error: fragment shader did not compile!\n");
 		exit(1);
 	}
 
-	GLuint program = LoadShader(vfile, ffile);
+	vertShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertShader, 1, (const char **) &kVertexShader, NULL);
+	glCompileShader(vertShader);
+	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
+	if (!stat) {
+		//      printf("Error: vertex shader did not compile!\n");
+		exit(1);
+	}
 
-	SDL_RWclose(ffile);
-	SDL_RWclose(vfile);
+	program = glCreateProgram();
+	glAttachShader(program, fragShader);
+	glAttachShader(program, vertShader);
+
+	return program;
+}
+
+static void create_shaders(void) {
+	GLint stat;
+
+//	SDL_RWops *vfile = NULL;
+//	SDL_RWops *ffile = NULL;
+//	vfile = SDL_RWFromFile("simplevert.glsl", "r");
+//	ffile = SDL_RWFromFile("simplefrag.glsl", "r");
+//	if (!vfile || !ffile){
+//		exit(1);
+//	}
+
+	GLuint program = LoadShader("simplevert.glsl", "simplefrag.glsl");
+
+//	SDL_RWclose(ffile);
+//	SDL_RWclose(vfile);
 
 	glLinkProgram(program);
 
@@ -601,6 +648,11 @@ int main(int argc, char * argv[])
 				}else if (event.key.keysym.scancode == SDL_SCANCODE_A) {
 
 				}
+				break;
+			}
+			case SDL_FINGERDOWN:
+			{
+				on_touch();
 				break;
 			}
 			case SDL_QUIT:
