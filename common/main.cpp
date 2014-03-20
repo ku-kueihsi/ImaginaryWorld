@@ -133,7 +133,7 @@ static void draw(void) {
 	}
 
 	Matrix<GLfloat, 4, 4, ColMajor > orthoMat = Matrix<GLfloat, 4, 4, ColMajor >::Identity();
-	GLfloat orthoScale = 0.2;
+	GLfloat orthoScale = 0.9f;
 	orthoMat(0, 0) = orthoScale;
 	orthoMat(1, 1) = orthoScale;
 	orthoMat(2, 2) = orthoScale;

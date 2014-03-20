@@ -31,6 +31,20 @@ LOCAL_SRC_FILES := $(ANDROID_TOOLCHAIN)/lib/libSDL2.a
 LOCAL_EXPORT_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/SDL2/
 include $(PREBUILT_STATIC_LIBRARY)
 
+#freetype2
+include $(CLEAR_VARS)
+LOCAL_MODULE := freetype2
+LOCAL_SRC_FILES := $(ANDROID_TOOLCHAIN)/lib/libfreetype.a
+LOCAL_EXPORT_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/freetype2/
+include $(PREBUILT_STATIC_LIBRARY)
+
+#bullet
+include $(CLEAR_VARS)
+LOCAL_MODULE := bullet
+LOCAL_SRC_FILES := $(ANDROID_TOOLCHAIN)/lib/libBulletCollision.a $(ANDROID_TOOLCHAIN)/lib/libBulletSoftBody.a $(ANDROID_TOOLCHAIN)/lib/libConvexDecomposition.a $(ANDROID_TOOLCHAIN)/lib/libLinearMath.a $(ANDROID_TOOLCHAIN)/lib/libBulletDynamics.a $(ANDROID_TOOLCHAIN)/lib/libBulletWorldImporter.a $(ANDROID_TOOLCHAIN)/lib/libGIMPACTUtils.a $(ANDROID_TOOLCHAIN)/lib/libBulletFileLoader.a $(ANDROID_TOOLCHAIN)/lib/libBulletXmlWorldImporter.a $(ANDROID_TOOLCHAIN)/lib/libHACD.a
+LOCAL_EXPORT_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/bullet/
+include $(PREBUILT_STATIC_LIBRARY)
+
 include $(CLEAR_VARS)
 
 COMMON := ../../../common/
@@ -50,7 +64,7 @@ LOCAL_SRC_FILES := 	SDL_android_main.c \
 					$(COMMON)/mesh.cpp 
 					 
 
-LOCAL_STATIC_LIBRARIES := SDL assimp libpng
+LOCAL_STATIC_LIBRARIES := SDL assimp libpng freetype2 bullet
 LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv1_CM -lGLESv2 -lEGL -landroid
 
 include $(BUILD_SHARED_LIBRARY)

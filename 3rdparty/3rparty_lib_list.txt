@@ -1,0 +1,19 @@
+assimp
+License: BSD license.
+http://assimp.sourceforge.net/
+
+libpng
+License: libpng
+http://www.libpng.org/pub/png/libpng.html
+
+SDL
+License: zlib license
+http://www.libsdl.org/
+
+freetype2
+License: The FreeType License (FTL) is the most commonly used one. It is a BSD-style license
+http://www.freetype.org/
+
+bullet
+License: zlib license
+http://bulletphysics.org/wordpress/
