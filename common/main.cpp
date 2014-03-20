@@ -20,9 +20,11 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengles2.h"
 #include "gl_tools.h"
+#include "data_utils.h"
 
 using namespace std;
 using namespace Eigen;
+using namespace glTools;
 
 //#define WINWIDTH 1280
 //#define WINHEIGHT 800
@@ -30,25 +32,25 @@ using namespace Eigen;
 int winWidth = 1280;
 int winHeight = 800;
 
-//static void sdldie(const char *msg)
-//{
-//	printf("%s: %s\n", msg, SDL_GetError());
-//	SDL_Quit();
-//	exit(1);
-//}
-//
-//static void checkSDLError(int line = -1)
-//{
-//#ifndef NDEBUG
-//	const char *error = SDL_GetError();
-//	if (*error != '\0') {
-//		printf("SDL Error: %s\n", error);
-//		if (line != -1)
-//			printf(" + line: %i\n", line);
-//		SDL_ClearError();
-//	}
-//#endif
-//}
+static void sdldie(const char *msg)
+{
+	LOG_PRINT("SDL_LOG", "%s: %s\n", msg, SDL_GetError());
+	SDL_Quit();
+	exit(1);
+}
+
+static void checkSDLError(int line = -1)
+{
+#ifndef NDEBUG
+	const char *error = SDL_GetError();
+	if (*error != '\0') {
+		LOG_PRINT("SDL_LOG", "SDL Error: %s\n", error);
+		if (line != -1)
+			LOG_PRINT("SDL_LOG", " + line: %i\n", line);
+		SDL_ClearError();
+	}
+#endif
+}
 
 #define EPS 0.00001
 //int testf() {
@@ -62,18 +64,6 @@ int winHeight = 800;
 
 typedef Matrix<GLfloat, 4, 4, ColMajor> GLmatrix4f;
 typedef Matrix<GLfloat, 4, 1, ColMajor> GLvector4f;
-
-string fileToString(const string fileName){
-	SDL_RWops *file = SDL_RWFromFile(fileName.c_str(), "r");
-	size_t len = SDL_RWseek(file, 0, SEEK_END);
-	SDL_RWseek(file, 0, SEEK_SET);
-	string fileString;
-	fileString.reserve(len + 1);
-	SDL_RWread(file,  &fileString[0], sizeof(char), len);
-	fileString[len] = '\0';
-	SDL_RWclose(file);
-	return fileString;
-}
 
 size_t filelen(FILE * pfile) {
 	if (!pfile) {
@@ -98,160 +88,6 @@ static GLint screen_height = 0;
 static GLuint VBOs[4];
 //end of GL global
 
-//void set_vertshader_file(FILE * pfile) {
-//	vertshader_file = pfile;
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(vertshader_file));
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", vertshader_file);
-//}
-//
-//void set_fragshader_file(FILE * pfile) {
-//	fragshader_file = pfile;
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d", filelen(fragshader_file));
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%d\n", fragshader_file);
-//}
-
-
-
-template<class Tfloat>
-void rotation_matrix(Tfloat u, Tfloat v, Tfloat w, Tfloat theta, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-	//generate the rotation matrix, rotate theta around vector (u, v, w) at point (a, b, c)
-
-	//create template matrix and direction vector
-	mat = Matrix<Tfloat, 4, 4, ColMajor>::Identity();
-	Matrix < Tfloat, 3, 1, ColMajor > vec(u, v, w);
-
-	//normalize the direction vector
-	vec.normalize();
-	u = vec(0);
-	v = vec(1);
-	w = vec(2);
-
-	//temp variables
-	Tfloat costheta = cos(theta), sintheta = sin(theta);
-	Tfloat complement_costheta = 1 - costheta;
-	Tfloat u2 = u * u;
-	Tfloat v2 = v * v;
-	Tfloat w2 = w * w;
-	Tfloat cos_part, sin_part;
-
-	//3 x 3 rotation
-	mat(0, 0) = u2 + (v2 + w2) * costheta;
-	mat(1, 1) = v2 + (u2 + w2) * costheta;
-	mat(2, 2) = w2 + (u2 + v2) * costheta;
-	cos_part = u * v * (complement_costheta);
-	sin_part = w * sintheta;
-	mat(0, 1) = cos_part - sin_part;
-	mat(1, 0) = cos_part + sin_part;
-	cos_part = u * w * (complement_costheta);
-	sin_part = v * sintheta;
-	mat(0, 2) = cos_part + sin_part;
-	mat(2, 0) = cos_part - sin_part;
-	cos_part = v * w * (complement_costheta);
-	sin_part = u * sintheta;
-	mat(1, 2) = cos_part - sin_part;
-	mat(1, 2) = cos_part + sin_part;
-}
-
-template<class Tfloat>
-void scale_matrix(Tfloat xs, Tfloat ys, Tfloat zs, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-	//generate the scale matrix
-
-	//create template matrix
-	mat = Matrix<Tfloat, 4, 4, ColMajor>::Identity();
-	mat(0, 0) = xs;
-	mat(1, 1) = ys;
-	mat(2, 2) = zs;
-}
-
-template<class Tfloat>
-void scale_matrix(Tfloat s, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-	//generate the scale matrix
-	scale_matrix(s, s, s, mat);
-}
-
-template<class Tfloat>
-void translation_matrix(Tfloat x, Tfloat y, Tfloat z, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-	//generate the translation matrix
-	//create template matrix
-	mat = Matrix<Tfloat, 4, 4, ColMajor>::Identity();
-	mat(0, 3) = x;
-	mat(1, 3) = y;
-	mat(2, 3) = z;
-}
-
-template<class Tfloat>
-//void perspective_matrix(Tfloat angleOfView = 45.0, Tfloat aspectRatio = 0.75, Tfloat near = 0.001, Tfloat far = 1000.0, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-void perspective_matrix(Tfloat angleOfView, Tfloat aspectRatio, Tfloat near, Tfloat far, Matrix<Tfloat, 4, 4, ColMajor > &mat) {
-	//generate the perspective matrix
-	//radians angleOfView
-	//aspectRatio = width / height
-
-    // Some calculus before the formula.
-    Tfloat size = near * tan(angleOfView / 2.0);
-    Tfloat left = -size, right = size, bottom = -size / aspectRatio, top = size / aspectRatio;
-
-    // First Column
-    mat(0, 0) = 2 * near / (right - left);
-    mat(1, 0) = 0.0;
-    mat(2, 0) = 0.0;
-    mat(3, 0) = 0.0;
-
-    // Second Column
-    mat(0, 1) = 0.0;
-    mat(1, 1) = 2 * near / (top - bottom);
-    mat(2, 1) = 0.0;
-    mat(3, 1) = 0.0;
-
-    // Third Column
-    mat(0, 2) = (right + left) / (right - left);
-    mat(1, 2) = (top + bottom) / (top - bottom);
-    mat(2, 2) = -(far + near) / (far - near);
-    mat(3, 2) = -1;
-
-    // Fourth Column
-    mat(0, 3) = 0.0;
-    mat(1, 3) = 0.0;
-    mat(2, 3) = -(2 * far * near) / (far - near);
-    mat(3, 3) = 0.0;
-}
-
-template<class Tfloat>
-void camera_matrix(Matrix<Tfloat, 4, 4, ColMajor > &mat,
-		const Matrix<Tfloat, 3, 1, ColMajor > &direction,
-		const Matrix<Tfloat, 3, 1, ColMajor > &camera,
-		const Matrix<Tfloat, 3, 1, ColMajor > &camera_up
-		) {
-	//generate the camera matrix
-	//create template vector
-	Matrix<Tfloat, 3, 1, ColMajor > right, up, back;
-	Matrix<Tfloat, 4, 4, ColMajor > tmat, rmat;
-	back = -direction;
-	back.normalize();
-	right = camera_up.cross(back);
-	right.normalize();
-	up = back.cross(right);
-
-	if (EPS > back.norm() || EPS > up.norm() || EPS > right.norm()){
-		mat = Matrix<Tfloat, 4, 4, ColMajor >::Identity();
-		return;
-	}
-
-	//rmat.block(0, 0, 1, 3) = right;
-	//rmat.block(1, 0, 1, 3) = up;
-	//rmat.block(2, 0, 1, 3) = back;
-	for (int i = 0; i < 3; ++i) {
-		rmat(0, i) = right(i);
-		rmat(1, i) = up(i);
-		rmat(2, i) = back(i);
-		rmat(3, i) = 0.0f;
-		rmat(i, 3) = 0.0f;
-	}
-	rmat(3, 3) = 1;
-
-	translation_matrix(-camera(0), -camera(1), -camera(2), tmat);
-
-	mat = rmat * tmat;
-}
 
 static void draw(void) {
 //	GLfloat mat[16], rot[16], scale[16];
@@ -264,17 +100,17 @@ static void draw(void) {
 
 	Matrix<GLfloat, 3, 1, ColMajor > direction(0.0f, 0.0f, -1.0f), camera_pos(0.0f, 0.0f, 5.0f), up(0.0f, 1.0f, 0.0f);
 
-	Matrix<GLfloat, 4, 4, ColMajor> pers_view_mat, rmat, smat, tmat, perspective_mat, camera_mat;
+	//Matrix<GLfloat, 4, 4, ColMajor> pers_view_mat, rmat, tmat, perspective_mat, camera_mat;
 
 //	scale_matrix(0.5f, smat.data());
 //	rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx, rmat.data());
-	scale_matrix(0.5f, smat);
+	Matrix4fc smat = scale_matrix(0.5f);
 //	rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx, rmat);
-	rotation_matrix(1.0f, 1.0f, 1.0f, view_rotx, rmat);
-	translation_matrix(0.0f, 0.0f, 1.0f, tmat);
-	perspective_matrix((GLfloat)3.14f * (GLfloat)0.25f, (GLfloat)screen_width / (GLfloat)screen_height, (GLfloat)0.01f, (GLfloat)1000.0f, perspective_mat);
-	camera_matrix(camera_mat, direction, camera_pos, up);
-	pers_view_mat = perspective_mat * camera_mat * tmat * smat * rmat;
+	Matrix4fc rmat = rotation_matrix(1.0f, 1.0f, 1.0f, view_rotx);
+	Matrix4fc tmat = translation_matrix(0.0f, 0.0f, 1.0f);
+	Matrix4fc perspective_mat = perspective_matrix((GLfloat)3.14f * (GLfloat)0.25f, (GLfloat)screen_width / (GLfloat)screen_height, (GLfloat)0.01f, (GLfloat)1000.0f);
+	Matrix4fc camera_mat = camera_matrix(direction, camera_pos, up);
+	Matrix4fc pers_view_mat = perspective_mat * camera_mat * tmat * smat * rmat;
 	glUniformMatrix4fv(u_matrix, 1, GL_FALSE, pers_view_mat.data());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -325,173 +161,6 @@ static void draw(void) {
 	    glDepthMask(GL_TRUE);
 	}
 
-}
-
-//GLuint LoadShader(FILE * vfile, FILE * ffile) {
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
-////	if (!vfile || !ffile) {
-////		exit(1);
-////	}
-////	size_t len;
-////	len = filelen(vfile);
-////	char * vertShaderText = new char[len + 1];
-////	fread(vertShaderText, len, sizeof(char), vfile);
-////	vertShaderText[len] = '\0';
-////
-////	len = filelen(ffile);
-////	char * fragShaderText = new char[len + 1];
-////	fread(fragShaderText, len, sizeof(char), ffile);
-////	fragShaderText[len] = '\0';
-//
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
-////	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
-//
-//
-//	static const char *fragShaderText = "precision mediump float;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_FragColor = v_color;\n"
-//			"}\n";
-//	static const char *vertShaderText = "precision mediump float;\n"
-//			"uniform mat4 modelviewProjection;\n"
-//			"attribute vec4 pos;\n"
-//			"attribute vec4 color;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_Position = modelviewProjection * pos;\n"
-//			"   v_color = color;\n"
-//			"}\n";
-//
-//	GLuint fragShader, vertShader, program;
-//	GLint stat;
-//
-//	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-//	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
-//	glCompileShader(fragShader);
-//	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
-//	if (!stat) {
-//		//      printf("Error: fragment shader did not compile!\n");
-//		exit(1);
-//	}
-//
-//	vertShader = glCreateShader(GL_VERTEX_SHADER);
-//	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
-//	glCompileShader(vertShader);
-//	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
-//	if (!stat) {
-//		//      printf("Error: vertex shader did not compile!\n");
-//		exit(1);
-//	}
-//
-//	program = glCreateProgram();
-//	glAttachShader(program, fragShader);
-//	glAttachShader(program, vertShader);
-//
-////	delete vertShaderText;
-////	delete fragShaderText;
-//	return program;
-//}
-
-GLuint LoadShader(SDL_RWops * vfile, SDL_RWops * ffile) {
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "loading shaders");
-	if (!vfile || !ffile) {
-		exit(1);
-	}
-	size_t len;
-	len = SDL_RWseek(vfile, 0, SEEK_END);
-	SDL_RWseek(vfile, 0, SEEK_SET);
-	char * vertShaderText = new char[len + 1];
-	SDL_RWread(vfile, vertShaderText, sizeof(char), len);
-	vertShaderText[len] = '\0';
-
-	len = SDL_RWseek(ffile, 0, SEEK_END);
-	SDL_RWseek(ffile, 0, SEEK_SET);
-	char * fragShaderText = new char[len + 1];
-	SDL_RWread(ffile, fragShaderText, sizeof(char), len);
-	fragShaderText[len] = '\0';
-
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", vertShaderText);
-//	__android_log_print(ANDROID_LOG_VERBOSE, "test", "%s\n", fragShaderText);
-
-
-//	static const char *fragShaderText = "precision mediump float;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_FragColor = v_color;\n"
-//			"}\n";
-//	static const char *vertShaderText = "precision mediump float;\n"
-//			"uniform mat4 modelviewProjection;\n"
-//			"attribute vec4 pos;\n"
-//			"attribute vec4 color;\n"
-//			"varying vec4 v_color;\n"
-//			"void main() {\n"
-//			"   gl_Position = modelviewProjection * pos;\n"
-//			"   v_color = color;\n"
-//			"}\n";
-
-	GLuint fragShader, vertShader, program;
-	GLint stat;
-
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, (const char **) &fragShaderText, NULL);
-	glCompileShader(fragShader);
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: fragment shader did not compile!\n");
-		exit(1);
-	}
-
-	vertShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertShader, 1, (const char **) &vertShaderText, NULL);
-	glCompileShader(vertShader);
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: vertex shader did not compile!\n");
-		exit(1);
-	}
-
-	program = glCreateProgram();
-	glAttachShader(program, fragShader);
-	glAttachShader(program, vertShader);
-
-	delete vertShaderText;
-	delete fragShaderText;
-	return program;
-}
-
-GLuint LoadShader(const string vFileName, const string fFileName) {
-	string vText = fileToString(vFileName);
-	string fText = fileToString(fFileName);
-
-    const GLchar *kVertexShader = vText.c_str();
-    const GLchar *kFragmentShader = fText.c_str();
-
-	GLuint fragShader, vertShader, program;
-	GLint stat;
-
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, (const char **) &kFragmentShader, NULL);
-	glCompileShader(fragShader);
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: fragment shader did not compile!\n");
-		exit(1);
-	}
-
-	vertShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertShader, 1, (const char **) &kVertexShader, NULL);
-	glCompileShader(vertShader);
-	glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
-	if (!stat) {
-		//      printf("Error: vertex shader did not compile!\n");
-		exit(1);
-	}
-
-	program = glCreateProgram();
-	glAttachShader(program, fragShader);
-	glAttachShader(program, vertShader);
-
-	return program;
 }
 
 static void create_shaders(void) {
@@ -614,18 +283,12 @@ int main(int argc, char * argv[])
 	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	//auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	LOG_PRINT("test", "%d\n", winWidth);
-	LOG_PRINT("test", "%d\n", winHeight);
-
-
 	if (window == 0)
 	{
 		SDL_Quit();
 		return false;
 	}
 	SDL_GetWindowSize(window, &winWidth, &winHeight);
-	LOG_PRINT("test", "%d\n", winWidth);
-	LOG_PRINT("test", "%d\n", winHeight);
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
 	auto glcontext = SDL_GL_CreateContext(window);
 
@@ -637,7 +300,8 @@ int main(int argc, char * argv[])
 
 	// raw gl code
 	glGetString(GL_VERSION);
-	printf("%s\n", glGetString(GL_VERSION));
+
+	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_VERSION));
 
 	on_surface_created();
 	on_surface_changed(winWidth, winHeight);

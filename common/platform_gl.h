@@ -16,11 +16,15 @@
 #include <GLES2/gl2.h>
 #include <android/log.h>
 
-//#ifndef NDEBUG
-#define LOG_PRINT(title, format, x) __android_log_print(ANDROID_LOG_VERBOSE, title, format, x)
-//#else
-//#define LOG_PRINT(title, format, x)
-//#endif //NDEBUG
+#ifndef NDEBUG
+#define LOG_PRINT(title, fmt, args...) __android_log_print(ANDROID_LOG_DEBUG, title, fmt, ##args)
+#else
+#define LOG_PRINT(title, format, x)
+#endif //NDEBUG
+
+#define ASSERT(cond) ((cond)?(void)0:__android_log_assert("##cond", "assert", ""))
+#define ASSERTMSG(cond, fmt, args...) ((cond)?(void)0:__android_log_assert("##cond", "assert", fmt, ##args))
+//#define ASSERT(e...) __android_log_assert(e, "TAG", #e)
 
 #endif //__ANDROID__
 

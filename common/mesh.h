@@ -57,10 +57,10 @@ class Texture {
     //
 public:
     Texture(GLenum textureType = GL_TEXTURE_2D);
-    Texture(const std::string &pngFileData, GLenum textureType = GL_TEXTURE_2D);
+    Texture(const std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
     virtual ~Texture();
     void Bind(GLenum channel = GL_TEXTURE0);
-    void Load(const std::string &pngFileData, GLenum textureType = GL_TEXTURE_2D);
+    void Load(const std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
     void Clear();
     
 private:

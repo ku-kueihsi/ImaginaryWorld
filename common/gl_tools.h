@@ -28,28 +28,32 @@
 
 namespace glTools{
 
-GLuint LoadShaderMemory(std::string &vstr, std::string &fstr);
+GLuint LoadShaderMemory(std::string vertexString, std::string fragmentString);
+GLuint LoadShader(std::string vertexFileName, std::string fragmentFileName);
 
 #define GLMAT44 Eigen::Matrix<Tfloat, 4, 4, Eigen::ColMajor >
 #define GLVEC3 Eigen::Matrix<Tfloat, 3, 1, Eigen::ColMajor >
+typedef Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > Matrix4fc;
+//typedef Eigen::Matrix<GLdouble, 4, 4, Eigen::ColMajor > Matrix4dc;
+
 
 template<class Tfloat>
-void rotation_matrix(GLMAT44 &mat, Tfloat u, Tfloat v, Tfloat w, Tfloat theta);
+GLMAT44 rotation_matrix(Tfloat u, Tfloat v, Tfloat w, Tfloat theta);
 
 template<class Tfloat>
-void scale_matrix(GLMAT44 &mat, Tfloat s);
+GLMAT44 scale_matrix(Tfloat s);
 
 template<class Tfloat>
-void scale_matrix(GLMAT44 &mat, Tfloat xs, Tfloat ys, Tfloat zs);
+GLMAT44 scale_matrix(Tfloat xs, Tfloat ys, Tfloat zs);
 
 template<class Tfloat>
-void translation_matrix(GLMAT44 &mat, Tfloat x, Tfloat y, Tfloat z);
+GLMAT44 translation_matrix(Tfloat x, Tfloat y, Tfloat z);
 
 template<class Tfloat>
-void perspective_matrix(GLMAT44 &mat, Tfloat angleOfView, Tfloat aspectRatio, Tfloat near, Tfloat far);
+GLMAT44 perspective_matrix(Tfloat angleOfView, Tfloat aspectRatio, Tfloat near, Tfloat far);
 
 template<class Tfloat>
-void camera_matrix(GLMAT44 &mat, const GLVEC3 &direction, const GLVEC3 &camera, const GLVEC3 &camera_up);
+GLMAT44 camera_matrix(const GLVEC3 direction, const GLVEC3 camera, const GLVEC3 camera_up);
 
 //extern template <> void scale_matrix<GLfloat>(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat xs, GLfloat ys, GLfloat zs);
 //extern template <> void scale_matrix<GLfloat>(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat s);

@@ -1,10 +1,12 @@
 #include "gl_tools.h"
+#include "data_utils.h"
+#include "platform_gl.h"
 namespace glTools{
 using namespace std;
 using namespace Eigen;
 #define EPS 0.00001
 
-GLuint LoadShaderMemory(string &vstr, string &fstr)
+GLuint LoadShaderMemory(string vertexString, string fragmentString)
 {
     //
     //Embedded shader for test
@@ -22,50 +24,61 @@ GLuint LoadShaderMemory(string &vstr, string &fstr)
     //      "   v_color = color;\n"
     //      "}\n";
 
-    GLuint vertShader, fragShader;
+    GLuint vertexShader, fragmentShader;
     GLint stat;
 
-    const GLchar *kVertexShader = vstr.c_str();
-    const GLchar *kFragmentShader = fstr.c_str();
+    LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
+
+    const GLchar *kVertexShader = vertexString.c_str();
+    const GLchar *kFragmentShader = fragmentString.c_str();
     //  cout << VertexShader << endl << FragmentShader << endl;
-    vertShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertShader, 1, (const GLchar **) &kVertexShader, NULL);
-    glCompileShader(vertShader);
-    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &stat);
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, (const GLchar **) &kVertexShader, NULL);
+    glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &stat);
     if (!stat) {
-        printf("Error: vertex shader did not compile!\n");
+        LOG_PRINT("SDL_LOG", "Error: vertex shader did not compile!\n");
+        LOG_PRINT("SDL_LOG", "%s\n", vertexString.c_str());
         exit(1);
     }
 
-    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragShader, 1, (const GLchar **) &kFragmentShader, NULL);
-    glCompileShader(fragShader);
-    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &stat);
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, (const GLchar **) &kFragmentShader, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &stat);
     if (!stat) {
-        printf("Error: fragment shader did not compile!\n");
+    	LOG_PRINT("SDL_LOG", "Error: fragment shader did not compile!\n");
+    	LOG_PRINT("SDL_LOG", "%s\n", kFragmentShader);
         exit(1);
     }
 
     GLuint program = glCreateProgram();
-    glAttachShader(program, fragShader);
-    glAttachShader(program, vertShader);
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
 
-    //  delete vertShaderText;
-    //  delete fragShaderText;
     return program;
+}
+
+GLuint LoadShader(string vertexFileName, string fragmentFileName) {
+	string vertexString = fileToString(vertexFileName);
+	string fragmentString = fileToString(fragmentFileName);
+
+	//LOG_PRINT("SDL_LOG", "%s\n%s\n", vertexFileName.c_str(), vertexString.c_str());
+	LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
+    return LoadShaderMemory(vertexString, fragmentString);
 }
 
 #define GLMAT44 Eigen::Matrix<Tfloat, 4, 4, Eigen::ColMajor >
 #define GLVEC3 Eigen::Matrix<Tfloat, 3, 1, Eigen::ColMajor >
 
 template<class Tfloat>
-void rotation_matrix(GLMAT44 &mat, Tfloat u, Tfloat v, Tfloat w, Tfloat theta)
+GLMAT44 rotation_matrix(Tfloat u, Tfloat v, Tfloat w, Tfloat theta)
 {
     //generate the rotation matrix, rotate theta around vector (u, v, w) at point (a, b, c)
 
     //create template matrix and direction vector
-    mat = GLMAT44::Identity();
-    GLVEC3 vec(u, v, w);
+	GLMAT44 mat = GLMAT44::Identity();
+	GLVEC3 vec(u, v, w);
 
     //normalize the direction vector
     vec.normalize();
@@ -97,41 +110,44 @@ void rotation_matrix(GLMAT44 &mat, Tfloat u, Tfloat v, Tfloat w, Tfloat theta)
     sin_part = u * sintheta;
     mat(1, 2) = cos_part - sin_part;
     mat(1, 2) = cos_part + sin_part;
+    return mat;
 }
 
 template<class Tfloat>
-void scale_matrix(GLMAT44 &mat, Tfloat xs, Tfloat ys, Tfloat zs)
+GLMAT44 scale_matrix(Tfloat xs, Tfloat ys, Tfloat zs)
 {
     //generate the scale matrix
 
     //create template matrix
-    mat = GLMAT44::Identity();
+	GLMAT44 mat = GLMAT44::Identity();
     mat(0, 0) = xs;
     mat(1, 1) = ys;
     mat(2, 2) = zs;
+    return mat;
 }
 
 template<class Tfloat>
-void scale_matrix(GLMAT44 &mat, Tfloat s)
+GLMAT44 scale_matrix(Tfloat s)
 {
     //generate the scale matrix
-    scale_matrix(mat, s, s, s);
+    return scale_matrix(s, s, s);
 }
 
 template<class Tfloat>
-void translation_matrix(GLMAT44 &mat, Tfloat x, Tfloat y, Tfloat z)
+GLMAT44 translation_matrix(Tfloat x, Tfloat y, Tfloat z)
 {
     //generate the translation matrix
     //create template matrix
-    mat = GLMAT44::Identity();
+	GLMAT44 mat = GLMAT44::Identity();
     mat(0, 3) = x;
     mat(1, 3) = y;
     mat(2, 3) = z;
+    return mat;
 }
 
 template<class Tfloat>
 //void perspective_matrix(Tfloat angleOfView = 45.0, Tfloat aspectRatio = 0.75, Tfloat near = 0.001, Tfloat far = 1000.0, GLMAT44 &mat) {
-void perspective_matrix(GLMAT44 &mat, Tfloat angleOfView, Tfloat aspectRatio, Tfloat near, Tfloat far)
+GLMAT44 perspective_matrix(Tfloat angleOfView, Tfloat aspectRatio, Tfloat near, Tfloat far)
 {
     //generate the perspective matrix
     //radians angleOfView
@@ -141,6 +157,7 @@ void perspective_matrix(GLMAT44 &mat, Tfloat angleOfView, Tfloat aspectRatio, Tf
     Tfloat size = near * tan(angleOfView / 2.0);
     Tfloat left = -size, right = size, bottom = -size / aspectRatio, top = size / aspectRatio;
 
+    GLMAT44 mat;
     // First Column
     mat(0, 0) = 2 * near / (right - left);
     mat(1, 0) = 0.0;
@@ -164,19 +181,20 @@ void perspective_matrix(GLMAT44 &mat, Tfloat angleOfView, Tfloat aspectRatio, Tf
     mat(1, 3) = 0.0;
     mat(2, 3) = -(2 * far * near) / (far - near);
     mat(3, 3) = 0.0;
+
+    return mat;
 }
 
 template<class Tfloat>
-void camera_matrix(GLMAT44 &mat,
-        const GLVEC3 &direction,
-        const GLVEC3 &camera,
-        const GLVEC3 &camera_up
+GLMAT44 camera_matrix(const GLVEC3 direction,
+        const GLVEC3 camera,
+        const GLVEC3 camera_up
         )
 {
     //generate the camera matrix
     //create template vector
     GLVEC3 right, up, back;
-    GLMAT44 tmat, rmat;
+    GLMAT44 rmat;
     back = -direction;
     back.normalize();
     right = camera_up.cross(back);
@@ -184,8 +202,7 @@ void camera_matrix(GLMAT44 &mat,
     up = back.cross(right);
 
     if (EPS > back.norm() || EPS > up.norm() || EPS > right.norm()) {
-        mat = GLMAT44::Identity();
-        return;
+        return GLMAT44::Identity();;
     }
 
     //rmat.block(0, 0, 1, 3) = right;
@@ -200,23 +217,22 @@ void camera_matrix(GLMAT44 &mat,
     }
     rmat(3, 3) = 1;
 
-    translation_matrix(tmat, -camera(0), -camera(1), -camera(2));
+    GLMAT44 tmat = translation_matrix(-camera(0), -camera(1), -camera(2));
 
-    mat = rmat * tmat;
+    return rmat * tmat;
 }
 
-template void rotation_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat u, GLfloat v, GLfloat w, GLfloat theta);
+template Matrix4fc rotation_matrix(GLfloat u, GLfloat v, GLfloat w, GLfloat theta);
 
-template void scale_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat s);
+template Matrix4fc scale_matrix(GLfloat s);
 
-template void scale_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat xs, GLfloat ys, GLfloat zs);
+template Matrix4fc scale_matrix(GLfloat xs, GLfloat ys, GLfloat zs);
 
-template void translation_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat x, GLfloat y, GLfloat z);
+template Matrix4fc translation_matrix(GLfloat x, GLfloat y, GLfloat z);
 
-template void perspective_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, GLfloat angleOfView, GLfloat aspectRatio, GLfloat near, GLfloat far);
+template Matrix4fc perspective_matrix(GLfloat angleOfView, GLfloat aspectRatio, GLfloat near, GLfloat far);
 
-template void camera_matrix(Eigen::Matrix<GLfloat, 4, 4, Eigen::ColMajor > &mat, 
-        const Eigen::Matrix<GLfloat, 3, 1, Eigen::ColMajor > &direction, 
-        const Eigen::Matrix<GLfloat, 3, 1, Eigen::ColMajor > &camera, 
-        const Eigen::Matrix<GLfloat, 3, 1, Eigen::ColMajor > &camera_up);
+template Matrix4fc camera_matrix(const Vector3f direction,
+        const Vector3f camera,
+        const Vector3f camera_up);
 }

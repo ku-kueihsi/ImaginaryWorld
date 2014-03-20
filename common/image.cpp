@@ -206,18 +206,19 @@ GLuint load_png_memory_into_texture(const string &png_file) {
 }
 
 GLuint load_png_into_texture(const char* path) {
-    assert(path != NULL);
-    string png_file;
-    FILE * fp = fopen(path, "r");
-    File2Str(png_file, fp);
-    fclose(fp); 
-    assert(1 < png_file.size());
+    ASSERT(path != NULL);
+    string png_file = fileToString(path);
+//    FILE * fp = fopen(path, "r");
+//    File2Str(png_file, fp);
+//    fclose(fp);
+    ASSERT(1 < png_file.size());
     return load_png_memory_into_texture(png_file);
 }
 
 GLuint load_png_into_texture(const string &path) {
-    string png_file;
-    File2Str(png_file, path);
-    assert(1 < png_file.size());
+	string png_file = fileToString(path);
+//    string png_file;
+//    File2Str(png_file, path);
+    ASSERT(1 < png_file.size());
     return load_png_memory_into_texture(png_file);
 }

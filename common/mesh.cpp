@@ -169,9 +169,9 @@ mTextureType(textureType)
 {
 }
 
-Texture::Texture(const std::string& pngFileData, GLenum textureType)
+Texture::Texture(const std::string pngFileName, GLenum textureType)
 {
-    Load(pngFileData, textureType);
+    Load(pngFileName, textureType);
 }
 
 Texture::~Texture()
@@ -179,16 +179,15 @@ Texture::~Texture()
     Clear();
 }
 
-void Texture::Load(const std::string& pngFileData, GLenum textureType)
+void Texture::Load(const std::string pngFileName, GLenum textureType)
 {
     Clear();
 
-    string tmpstr;
-    File2Str(tmpstr, pngFileData);
-    if (tmpstr.size() > 1) {
-        mTextureObjectId = load_png_memory_into_texture(tmpstr);
+    string tmpStr = fileToString(pngFileName);
+    if (tmpStr.size() > 1) {
+        mTextureObjectId = load_png_memory_into_texture(tmpStr);
     } else {
-        mTextureObjectId = load_png_memory_into_texture(pngFileData);
+        mTextureObjectId = load_png_memory_into_texture(pngFileName);
     }
     mTextureType = textureType;
     return;

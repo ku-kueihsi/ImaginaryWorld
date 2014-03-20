@@ -13,8 +13,10 @@
 #include <string>
 
 namespace glTools {
-void File2Str(std::string &str, const std::string &file_name);
-void File2Str(std::string &str, FILE * fp);
+//void File2Str(std::string &str, const std::string &file_name);
+//void File2Str(std::string &str, FILE * fp);
+std::string fileToString(const std::string fileName);
+std::string fileToString(const char *fileName);
 }
 
 
