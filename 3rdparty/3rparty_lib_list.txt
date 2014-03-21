@@ -17,3 +17,7 @@ http://www.freetype.org/
 bullet
 License: zlib license
 http://bulletphysics.org/wordpress/
+
+eigen
+License: MPL2, which is a simple weak copyleft license
+http://eigen.tuxfamily.org/index.php?title=Main_Page
