@@ -1,0 +1,8 @@
+LOCAL_PATH := $(call my-dir)
+
+#libpng
+include $(CLEAR_VARS)
+LOCAL_MODULE := libpng
+LOCAL_SRC_FILES := $(ANDROID_TOOLCHAIN)/lib/libpng.a
+LOCAL_EXPORT_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/
+include $(PREBUILT_STATIC_LIBRARY)
