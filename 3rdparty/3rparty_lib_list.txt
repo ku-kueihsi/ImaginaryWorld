@@ -21,3 +21,12 @@ http://bulletphysics.org/wordpress/
 eigen
 License: MPL2, which is a simple weak copyleft license
 http://eigen.tuxfamily.org/index.php?title=Main_Page
+
+ttf-droid
+License: Apache
+http://code.google.com/android/
+ftp://ftp.archlinux.org/other/community/ttf-droid/ttf-droid-20121017.tar.xz
+
+dejavu-fonts(ttf)
+License: Bitstream Vera Fonts Copyright 
+http://dejavu-fonts.org/wiki/Main_Page
