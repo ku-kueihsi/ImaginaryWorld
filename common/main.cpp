@@ -174,7 +174,7 @@ static void create_shaders(void) {
 //		exit(1);
 //	}
 
-	GLuint program = LoadShader("simplevert.glsl", "simplefrag.glsl");
+	GLuint program = LoadShader("shader/simplevert.glsl", "shader/simplefrag.glsl");
 
 //	SDL_RWclose(ffile);
 //	SDL_RWclose(vfile);
