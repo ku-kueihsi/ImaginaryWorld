@@ -38,7 +38,7 @@ namespace glTools {
 //    str.at(fsize) = '\0';
 //}
 
-string fileToString(const string fileName){
+string fileToString(string fileName){
 	return fileToString(fileName.c_str());
 }
 

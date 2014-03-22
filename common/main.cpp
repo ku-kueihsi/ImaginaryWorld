@@ -138,8 +138,15 @@ static void create_shaders(void)
 {
 //    GLint stat;
 
-    string vstr = fileToString("shader/daeVertex.glsl");
-    string fstr = fileToString("shader/daeFragment.glsl");
+//    string vstr = fileToString("shader/daeVertex.glsl");
+//    string fstr = fileToString("shader/daeFragment.glsl");
+	string vstr = fileToString("shader/simplevert.glsl");
+	string fstr = fileToString("shader/simplefrag.glsl");
+
+    LOG_PRINT("SDL_LOG", "%d\n", vstr.size());
+    LOG_PRINT("SDL_LOG", "%d\n", fstr.size());
+    LOG_PRINT("SDL_LOG", "%s\n", vstr.c_str());
+    LOG_PRINT("SDL_LOG", "%s\n", fstr.c_str());
 
     programobj.Load(vstr, fstr);
 }
@@ -166,10 +173,10 @@ void Init_GL()
 
     string fileData = fileToString(pFileName);
 
-    objobj.setResourcePath("Download/texture/");
-    objobj.InitFromMemory(fileData);
-    objobj.SetShaderIndex(programobj.GetId());
-    objobj.SetUpShader();
+//    objobj.setResourcePath("texture/");
+//    objobj.InitFromMemory(fileData);
+//    objobj.SetShaderIndex(programobj.GetId());
+//    objobj.SetUpShader();
 
     glEnable(GL_DEPTH_TEST);
 //    glFrontFace(GL_CW);
@@ -246,7 +253,7 @@ int main(int argc, char * argv[])
 	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_VERSION));
 
 
-//    Init_GL();
+    Init_GL();
 //
 //    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
 //    const GLfloat kTimePerTick = 1 / 60.0f;
