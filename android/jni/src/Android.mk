@@ -15,11 +15,13 @@ include $(CLEAR_VARS)
 
 COMMON := ../../../common/
 
+## extra includes
 LOCAL_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/
 LOCAL_C_INCLUDES += $(ANDROID_TOOLCHAIN)/include/eigen3/
 LOCAL_C_INCLUDES += $(ANDROID_SYSROOT)/include/
 LOCAL_C_INCLUDES += $(COMMON)/
 
+## jni module name
 LOCAL_MODULE := main
 
 LOCAL_SRC_FILES := 	SDL_android_main.c \

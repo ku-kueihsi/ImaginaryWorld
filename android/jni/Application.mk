@@ -16,7 +16,7 @@ APP_PLATFORM                    := android-19
 ##for debugging
 APP_OPTIM := debug
  
-OPT_FLAGS := -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE 
+OPT_FLAGS := -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE -DEIGEN_MPL2_ONLY 
 APP_CFLAGS    += -Wall -Wextra -O3 -std=c99
 APP_CFLAGS    += $(OPT_FLAGS)
 APP_CPPFLAGS  += -O3 -std=c++11
