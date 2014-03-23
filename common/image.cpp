@@ -35,13 +35,13 @@ static GLenum get_gl_color_format(const int png_color_format);
 
 RawImageData get_raw_image_data_from_png(const void* png_data, const int png_data_size)
 {
-    assert(png_data != NULL && png_data_size > 8);
-    assert(png_sig_cmp((const unsigned char *) png_data, 0, 8) == 0);
+    ASSERT(png_data != NULL && png_data_size > 8);
+    ASSERT(png_sig_cmp((const unsigned char *) png_data, 0, 8) == 0);
 
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    assert(png_ptr != NULL);
+    ASSERT(png_ptr != NULL);
     png_infop info_ptr = png_create_info_struct(png_ptr);
-    assert(info_ptr != NULL);
+    ASSERT(info_ptr != NULL);
 
     ReadDataHandle png_data_handle = (ReadDataHandle){
         {(const png_byte*) png_data, (const size_t) png_data_size}, 0};
@@ -71,7 +71,7 @@ RawImageData get_raw_image_data_from_png(const void* png_data, const int png_dat
 
 void release_raw_image_data(const RawImageData* data)
 {
-    assert(data != NULL);
+    ASSERT(data != NULL);
     free((void*) data->data);
 }
 
@@ -129,10 +129,10 @@ static DataHandle read_entire_png_image(const png_structp png_ptr, const png_inf
 {
     const png_size_t row_size = png_get_rowbytes(png_ptr, info_ptr);
     const int data_length = row_size * height;
-    assert(row_size > 0);
+    ASSERT(row_size > 0);
 
     png_byte* raw_image = (png_byte *) malloc(data_length);
-    assert(raw_image != NULL);
+    ASSERT(raw_image != NULL);
 
     png_byte * row_ptrs[height];
 
@@ -157,7 +157,7 @@ static DataHandle read_entire_png_image(const png_structp png_ptr, const png_inf
 
 static GLenum get_gl_color_format(const int png_color_format)
 {
-    assert(png_color_format == PNG_COLOR_TYPE_GRAY
+    ASSERT(png_color_format == PNG_COLOR_TYPE_GRAY
             || png_color_format == PNG_COLOR_TYPE_RGB_ALPHA
             || png_color_format == PNG_COLOR_TYPE_GRAY_ALPHA);
 
@@ -178,7 +178,7 @@ GLuint load_texture(
     const GLenum type, const GLvoid* pixels) {
     GLuint textureObjectId;
     glGenTextures(1, &textureObjectId);
-    assert(textureObjectId != 0);
+    ASSERT(textureObjectId != 0);
  
     glBindTexture(GL_TEXTURE_2D, textureObjectId);
  

@@ -23,7 +23,7 @@ precision lowp float;
 uniform lowp sampler2D u_TextureUnit;
 IN lowp vec2 v_TextureCoordinates;
 IN vec3 v_Normal;
-IN lowp vec4 debugColor;
+//IN lowp vec4 debugColor;
 
 void main()
 {
@@ -31,14 +31,16 @@ void main()
     float DiffuseFactor = dot(normalize(v_Normal), normalize(vec3(1.0, -1.0, 1.0)));
     vec4 DiffuseColor;                                                              
        
-    DiffuseColor = clamp(DiffuseColor, 0.0, 1.0);                                                                             
+    DiffuseFactor = clamp(DiffuseFactor, 0.1, 1.0); 
+    DiffuseColor = vec4(1.0, 1.0, 1.0, 1.0) * DiffuseFactor;                                                                              
  //   if (DiffuseFactor > 0) {                                                        
  //       DiffuseColor = vec4(1.0, 1.0, 1.0, 1.0) * DiffuseFactor;                                               
  //   }                                                                               
  //   else {                                                                          
  //      DiffuseColor = vec4(0.0, 0.0, 0.0, 0.0);                                            
  //   } 
-    gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates) * (DiffuseColor + vec4(0.1, 0.1, 0.1, 0.0));
+    //gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates) * (DiffuseColor + vec4(0.1, 0.1, 0.1, 0.0));
+    gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates) * DiffuseColor;
 //    gl_FragColor = debugColor;
 //    gl_FragColor = vec4(1,1,1,1);
 

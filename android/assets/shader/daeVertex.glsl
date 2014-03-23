@@ -40,7 +40,7 @@ uniform mat4 gBones[kMaxBones];
 
 OUT vec2 v_TextureCoordinates;
 OUT vec3 v_Normal;
-OUT vec4 debugColor;
+//OUT vec4 debugColor;
 
 void main()
 {
@@ -59,7 +59,7 @@ void main()
 //    gl_Position = modelviewProjection * vec4(a_Position, 1.0);
 
 //    debugColor[a_boneWeights[a_boneIds[0]], a_boneWeights[a_boneIds[1]], 1, 1];
-    debugColor = vec4(a_boneIds[0], 0, 0, 1);
+//    debugColor = vec4(a_boneIds[0], 0, 0, 1);
 //    v_Normal = (world_mat * gBones[a_boneIds[0]] * vec4(a_Normal, 0.0)).xyz;
 //    gl_Position = modelviewProjection * gBones[a_boneIds[0]] * vec4(a_Position, 1.0);
 

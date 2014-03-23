@@ -180,7 +180,7 @@ void ShaderProgram::Load(std::string vertexStr, std::string fragmentStr)
 
 void ShaderProgram::Use()
 {
-    assert(mProgramId);
+    ASSERT(mProgramId);
     glUseProgram(mProgramId);
 }
 
@@ -226,7 +226,7 @@ void Texture::Clear()
 
 void Texture::Bind(GLenum channel)
 {
-    assert(mTextureObjectId);
+    ASSERT(mTextureObjectId);
     glActiveTexture(channel);
     glBindTexture(mTextureType, mTextureObjectId);
 }
@@ -244,7 +244,7 @@ void Mesh::Clear()
 
 inline void FillDataBuffer(GLuint bufferIndex, vector<GLfloat > data, GLenum usage)
 {
-    assert(bufferIndex);
+    ASSERT(bufferIndex);
     glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
     glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * data.size(), data.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -252,7 +252,7 @@ inline void FillDataBuffer(GLuint bufferIndex, vector<GLfloat > data, GLenum usa
 
 inline void FillDataBuffer(GLuint bufferIndex, vector<GLubyte > data, GLenum usage)
 {
-    assert(bufferIndex);
+    ASSERT(bufferIndex);
     glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
     glBufferData(GL_ARRAY_BUFFER, sizeof (GLubyte) * data.size(), data.data(), usage);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -276,21 +276,21 @@ void Mesh::Init(
     //generate vbos
     glGenBuffers(NUM_DBs, mDataBuffers);
 //    //fill vertex buffer
-//    assert(mDataBuffers[POSITION_DB]);
+//    ASSERT(mDataBuffers[POSITION_DB]);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[POSITION_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * positions.size(), positions.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 //    //fill normal buffer
-//    assert(mDataBuffers[NORMAL_DB]);
-//    assert(normals.size() / 3 == mNumVertices);
+//    ASSERT(mDataBuffers[NORMAL_DB]);
+//    ASSERT(normals.size() / 3 == mNumVertices);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[NORMAL_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * normals.size(), normals.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 //    //fill normal buffer
-//    assert(mDataBuffers[TEXCOORD_DB]);
-//    assert(textureCoordinates.size() / 2 == mNumVertices);
+//    ASSERT(mDataBuffers[TEXCOORD_DB]);
+//    ASSERT(textureCoordinates.size() / 2 == mNumVertices);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[TEXCOORD_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * textureCoordinates.size(), textureCoordinates.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -301,7 +301,7 @@ void Mesh::Init(
     FillDataBuffer(mDataBuffers[BONE_INDEX_DB], boneIds, usage);
     FillDataBuffer(mDataBuffers[BONE_WEIGHT_DB], boneWeights, usage);
 
-    assert(mDataBuffers[INDEX_BUFFER]);
+    ASSERT(mDataBuffers[INDEX_BUFFER]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mDataBuffers[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof (GLuint) * indices.size(), indices.data(), usage);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -326,26 +326,26 @@ void Mesh::Init(
 //    //generate vbos
 //    glGenBuffers(NUM_DBs, mDataBuffers);
 //    //fill vertex buffer
-//    assert(mDataBuffers[POSITION_DB]);
+//    ASSERT(mDataBuffers[POSITION_DB]);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[POSITION_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * positions.size(), positions.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 //    
 //    //fill normal buffer
-//    assert(mDataBuffers[NORMAL_DB]);
-//    assert(normals.size() / 3 == mNumVertices);
+//    ASSERT(mDataBuffers[NORMAL_DB]);
+//    ASSERT(normals.size() / 3 == mNumVertices);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[NORMAL_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * normals.size(), normals.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 //    
 //    //fill normal buffer
-//    assert(mDataBuffers[TEXCOORD_DB]);
-//    assert(textureCoordinates.size() / 2 == mNumVertices);
+//    ASSERT(mDataBuffers[TEXCOORD_DB]);
+//    ASSERT(textureCoordinates.size() / 2 == mNumVertices);
 //    glBindBuffer(GL_ARRAY_BUFFER, mDataBuffers[TEXCOORD_DB]);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * textureCoordinates.size(), textureCoordinates.data(), usage);
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 //    
-//    assert(mDataBuffers[INDEX_BUFFER]);
+//    ASSERT(mDataBuffers[INDEX_BUFFER]);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mDataBuffers[INDEX_BUFFER]);
 //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof (GLubyte) * indices.size(), indices.data(), usage);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -413,7 +413,7 @@ void Mesh::Render()
 
 void Mesh::DrawOn()
 {
-    assert(mDataBuffers[POSITION_DB] && \
+    ASSERT(mDataBuffers[POSITION_DB] && \
            mDataBuffers[NORMAL_DB] && \
            mDataBuffers[TEXCOORD_DB] && \
            mDataBuffers[BONE_INDEX_DB] && \
@@ -473,7 +473,7 @@ void RenderUnit::InitFromMemory(std::string fileData)
                 aiProcess_GenSmoothNormals | 
                 aiProcess_JoinIdenticalVertices | 
                 aiProcess_FlipUVs);  
-    assert(pScene);
+    ASSERT(pScene);
 //    mpScene = pScene;
 
     mAnimationTree.Init(pScene);
@@ -498,11 +498,11 @@ void RenderUnit::SetUpShader()
 
 void RenderUnit::InitAnimations(const aiScene* pScene)
 {
-//    assert(pScene);
+//    ASSERT(pScene);
 //    //mMeshPtrList.resize(pScene->mNumMeshes);
 //    for (int i = 0; i < pScene->mNumMeshes; ++i){
 //        const aiMesh * pMesh = pScene->mMeshes[i];
-////        assert(pMesh->HasBones());
+////        ASSERT(pMesh->HasBones());
 //        for (int j = 0; j < pMesh->mNumBones; ++j){
 //            string boneName(pMesh->mBones[i]->mName.data);
 //            if (mBoneMap.find (boneName) != mBoneMap.end()){ //new bone to the map
@@ -519,7 +519,7 @@ void RenderUnit::InitAnimations(const aiScene* pScene)
 
 void RenderUnit::InitMeshes(const aiScene* pScene)
 {
-    assert(pScene);
+    ASSERT(pScene);
     //mMeshPtrList.resize(pScene->mNumMeshes);
     for (unsigned int i = 0; i < pScene->mNumMeshes; ++i){
         const aiMesh * pMesh = pScene->mMeshes[i];
@@ -533,7 +533,15 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
         vector<GLuint > indexData(pMesh->mNumFaces * 3);
 
 
-        assert(pMesh->HasPositions() && pMesh->HasNormals());
+        ASSERT(pMesh->HasPositions() && pMesh->HasNormals());
+        ASSERT(pMesh->mNumVertices);
+        mBoundingBox.minx = pMesh->mVertices[0].x;
+        mBoundingBox.maxx = pMesh->mVertices[0].x;
+        mBoundingBox.miny = pMesh->mVertices[0].y;
+        mBoundingBox.maxy = pMesh->mVertices[0].y;
+        mBoundingBox.minz = pMesh->mVertices[0].z;
+        mBoundingBox.maxz = pMesh->mVertices[0].z;
+
 
         for (unsigned int j = 0; j < pMesh->mNumVertices; ++j) {
             //cout << pMesh->mVertices[j].x << " " << pMesh->mVertices[j].y << " " << pMesh->mVertices[j].z << endl;
@@ -545,6 +553,14 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
                 positions[offset] = pMesh->mVertices[j].x;
                 positions[offset + 1] = pMesh->mVertices[j].y;
                 positions[offset + 2] = pMesh->mVertices[j].z;
+
+                //get bouning box
+                mBoundingBox.minx = min(mBoundingBox.minx, pMesh->mVertices[j].x);
+                mBoundingBox.maxx = max(mBoundingBox.maxx, pMesh->mVertices[j].x);
+                mBoundingBox.miny = min(mBoundingBox.miny, pMesh->mVertices[j].y);
+                mBoundingBox.maxy = max(mBoundingBox.maxy, pMesh->mVertices[j].y);
+                mBoundingBox.minz = min(mBoundingBox.minz, pMesh->mVertices[j].z);
+                mBoundingBox.maxz = max(mBoundingBox.maxz, pMesh->mVertices[j].z);
             }
             //normal
             {
@@ -569,34 +585,49 @@ void RenderUnit::InitMeshes(const aiScene* pScene)
         }
 
         //bone indices and weights
-        for (unsigned int j = 0; j < pMesh->mNumBones; ++j){
-            const aiBone *pBone = pMesh->mBones[j];
-            string boneName(pBone->mName.data);
-            GLubyte boneIndex = mAnimationTree.mAnimationMap[boneName];
-            for (unsigned int k = 0; k < pBone->mNumWeights; ++k){
-                const aiVertexWeight *pWeight = pBone->mWeights + k;
-                if (boneCounts[pWeight->mVertexId] < MAX_BONE_WEIGHTS){
-                    boneIds[pWeight->mVertexId * MAX_BONE_WEIGHTS+ boneCounts[pWeight->mVertexId]] = boneIndex;
-                    boneWeights[pWeight->mVertexId * MAX_BONE_WEIGHTS + boneCounts[pWeight->mVertexId]] = pWeight->mWeight;
-                    boneCounts[pWeight->mVertexId]++;
-                }
-            }
+        if(pMesh->HasBones()){
+        	for (unsigned int j = 0; j < pMesh->mNumBones; ++j){
+        		const aiBone *pBone = pMesh->mBones[j];
+        		string boneName(pBone->mName.data);
+        		GLubyte boneIndex = mAnimationTree.mAnimationMap[boneName];
+        		for (unsigned int k = 0; k < pBone->mNumWeights; ++k){
+        			const aiVertexWeight *pWeight = pBone->mWeights + k;
+        			if (boneCounts[pWeight->mVertexId] < MAX_BONE_WEIGHTS){
+        				boneIds[pWeight->mVertexId * MAX_BONE_WEIGHTS+ boneCounts[pWeight->mVertexId]] = boneIndex;
+        				boneWeights[pWeight->mVertexId * MAX_BONE_WEIGHTS + boneCounts[pWeight->mVertexId]] = pWeight->mWeight;
+        				boneCounts[pWeight->mVertexId]++;
+        			}
+        		}
+        	}
+        }else{//no bones
+        	for (unsigned int j = 0; j < pMesh->mNumVertices; ++j) {
+        		//for (unsigned int k = 1; k < MAX_BONE_WEIGHTS; ++k)
+//        		{//dummy bone
+//        			boneIds[j * MAX_BONE_WEIGHTS] = 0;
+//        			boneWeights[j * MAX_BONE_WEIGHTS] = 1.0;
+//        		}
+        		for (unsigned int k = 0; k < MAX_BONE_WEIGHTS; ++k)
+        		{//dummy bone
+        			boneIds[j * MAX_BONE_WEIGHTS + k] = 0;
+        			boneWeights[j * MAX_BONE_WEIGHTS + k] = 1.0;
+        		}
+        	}
         }
 
         //normailize bone weights
-//        for (int j = 0; j < pMesh->mNumVertices; ++j){
-////            Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> weightVector =
-////                    Map<Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> >(&(boneWeights[j * MAX_BONE_WEIGHTS]));
+        for (unsigned int j = 0; j < pMesh->mNumVertices; ++j){
+//            Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> weightVector =
+//                    Map<Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> >(&(boneWeights[j * MAX_BONE_WEIGHTS]));
 
-//            Map<Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> > weightVector(&(boneWeights[0]) + (j * MAX_BONE_WEIGHTS));
-//            weightVector.normalize();
-//        }
+            Map<Matrix<GLfloat, MAX_BONE_WEIGHTS, 1, ColMajor> > weightVector(&(boneWeights[0]) + (j * MAX_BONE_WEIGHTS));
+            weightVector.normalize();
+        }
 
 
 
         for (unsigned int j = 0; j < pMesh->mNumFaces; ++j){
             const aiFace& face = pMesh->mFaces[j];
-            assert(face.mNumIndices == 3);
+            ASSERT(face.mNumIndices == 3);
             int offset = j * 3;
             for (unsigned int k = 0; k < face.mNumIndices; ++k){
                 indexData[offset + k] = face.mIndices[k];
@@ -641,22 +672,27 @@ void RenderUnit::InitTextures(const aiScene* pScene)
 
 void RenderUnit::DrawOn()
 {
-    //update bones
-    mCurrentTimeInSecond = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> deltaTime = mCurrentTimeInSecond-mInitTimeInSecond;
-    GLfloat time = fmod(deltaTime.count(), mAnimationTree.mAction.duration);
-    mAnimationTree.UpdateAnimation(time);
-    for (unsigned int i = 0; i < mAnimationTree.mAction.animationList.size(); ++i)
-    {
-//        GLMatrix4f testm = GLMatrix4f::Identity();
-//        GLMatrix4f testm = mAnimationTree.mAction.animationList[i].finalTransformation;
-//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)testm.data());
-        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)mAnimationTree.mAction.animationList[i].finalTransformation.data());
-//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)mAnimationTree.mAction.animationList[i].currentTransformation.data());
-//        GLMatrix4f testm = GLMatrix4f::Identity();
-//        scale_matrix(testm, (GLfloat(i) + 0.8f) * 3.0f);
-//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat* ) testm.data());
-    }
+	if (mAnimationTree.mRootNode){
+		//update bones
+		mCurrentTimeInSecond = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> deltaTime = mCurrentTimeInSecond-mInitTimeInSecond;
+		GLfloat time = fmod(deltaTime.count(), mAnimationTree.mAction.duration);
+		mAnimationTree.UpdateAnimation(time);
+		for (unsigned int i = 0; i < mAnimationTree.mAction.animationList.size(); ++i)
+		{
+	//        GLMatrix4f testm = GLMatrix4f::Identity();
+	//        GLMatrix4f testm = mAnimationTree.mAction.animationList[i].finalTransformation;
+	//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)testm.data());
+			glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)mAnimationTree.mAction.animationList[i].finalTransformation.data());
+	//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat*)mAnimationTree.mAction.animationList[i].currentTransformation.data());
+	//        GLMatrix4f testm = GLMatrix4f::Identity();
+	//        scale_matrix(testm, (GLfloat(i) + 0.8f) * 3.0f);
+	//        glUniformMatrix4fv(mBoneLocation[i], 1, GL_FALSE, (const GLfloat* ) testm.data());
+		}
+	}else{
+		Matrix4fc trans = Matrix4fc::Identity();
+		glUniformMatrix4fv(mBoneLocation[0], 1, GL_FALSE, trans.data());
+	}
 
     //Draw Meshes
     for (Mesh *pMesh : mMeshPtrList){
@@ -698,7 +734,8 @@ RenderUnit::~RenderUnit()
 }
 
 RenderUnit::RenderUnit():
-mResourcePath("./")
+mBoundingBox(),
+mResourcePath("")
 {
 }
 
@@ -773,8 +810,8 @@ mResourcePath("./")
 
 //void Skeleton::Init(const aiScene *pScene)
 //{
-//    assert(pScene);
-//    assert(pScene->HasAnimations());
+//    ASSERT(pScene);
+//    ASSERT(pScene->HasAnimations());
 //    Clear();
 //    //serialize the node tree, build bone map
 //    //preoder traverse guarantees parents are visted first
@@ -793,7 +830,7 @@ mResourcePath("./")
 
 //void Skeleton::BuildAnimationListRecursive(const aiNode *pNode, GLuint &baseIndex)
 //{
-//    //assert(pNode && baseIndex < mBoneAnimations.size());
+//    //ASSERT(pNode && baseIndex < mBoneAnimations.size());
 //    cout << "baseIndex " << baseIndex << endl;
 //    string nodeName = string(pNode->mName.data);
 ////    if (mBoneMap.find(nodeName) == mBoneMap.end()){
@@ -929,7 +966,7 @@ UnitTree::~UnitTree()
 
 void UnitTree::BuildFromAssimpRecursive(UnitNode *&pNode, const aiNode *pAiNode)
 {
-    assert(pAiNode);
+    ASSERT(pAiNode);
     pNode = new UnitNode;
     pNode->mName = string(pAiNode->mName.data);
     if (mAnimationMap.find(pNode->mName) != mAnimationMap.end()){
@@ -952,17 +989,20 @@ void UnitTree::BuildFromAssimpRecursive(UnitNode *&pNode, const aiNode *pAiNode)
 
 void UnitTree::Init(const aiScene *pScene)
 {
-    assert(pScene);
+    ASSERT(pScene);
     Clear();
-    GLMatrix4fFromAssimp(mGlobalInverseTransform, pScene->mRootNode->mTransformation.Inverse());
-//    GLMatrix4fFromAssimp(mGlobalInverseTransform, pScene->mRootNode->mTransformation);
-    mGlobalInverseTransform = mGlobalInverseTransform.inverse().eval();
-    InitAction(pScene);
-    BuildFromAssimpRecursive(mRootNode, pScene->mRootNode);
+    if (pScene->HasAnimations()){
+    	GLMatrix4fFromAssimp(mGlobalInverseTransform, pScene->mRootNode->mTransformation.Inverse());
+    	//    GLMatrix4fFromAssimp(mGlobalInverseTransform, pScene->mRootNode->mTransformation);
+    	mGlobalInverseTransform = mGlobalInverseTransform.inverse().eval();
+    	InitAction(pScene);
+    	BuildFromAssimpRecursive(mRootNode, pScene->mRootNode);
+    }
+    return;
 }
 
 void UnitTree::InitAction(const aiScene *pScene){
-    assert(pScene->HasAnimations());
+    ASSERT(pScene->HasAnimations());
     const aiAnimation *pAnimation = pScene->mAnimations[0];
     mAction.name = string(pAnimation->mName.data);
     if (pAnimation->mTicksPerSecond == 0){

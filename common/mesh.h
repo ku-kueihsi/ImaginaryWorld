@@ -12,6 +12,8 @@
 #include <string>
 #include <unordered_map>
 #include <chrono>
+#include <cmath>
+#include <math.h>
 
 
 namespace glTools {
@@ -247,6 +249,26 @@ public:
     void PrintRecursive(const UnitNode *pNode, int depth);
 };
 
+struct BoundingBox
+{
+	GLfloat minx;
+	GLfloat maxx;
+	GLfloat miny;
+	GLfloat maxy;
+	GLfloat minz;
+	GLfloat maxz;
+	BoundingBox():
+	minx(0), maxx(0), miny(0), maxy(0), minz(0), maxz(0)
+	{
+	}
+	GLVector3f center(){
+		return GLVector3f(minx + maxx, miny + maxy, minz + maxz) * 0.5;
+	}
+	GLfloat diameter(){
+		return sqrt((maxx - minx) * (maxx - minx) + (maxy - miny) * (maxy - miny) + (maxz - minz) * (maxz - minz));
+	}
+};
+
 class RenderUnit
 {
 public:
@@ -259,6 +281,7 @@ public:
     void SetShaderIndex(GLuint shaderIndex){mShaderIndex = shaderIndex;}
     void SetUpShader();
     void setResourcePath(std::string path);
+    BoundingBox mBoundingBox;
 private:
 //    class BoneInfo
 //    {
@@ -286,6 +309,7 @@ private:
     GLubyte mBoneLocation[MAX_BONES];
     GLuint mShaderIndex;
     std::string mResourcePath;
+//    bool mHasAnimation;
 //    GLfloat mInitTimeInSecond;
 //    std::vector<BoneInfo> mBoneInfoList;
 //    std::unordered_map<std::string, GLubyte > mBoneMap;

@@ -109,6 +109,19 @@ static ShaderProgram programobj;
 //static Mesh meshobj;
 static RenderUnit objobj;
 
+Vector3f direction, camera_pos, up;
+
+
+//  scale_matrix(0.5f, smat.data());
+//  rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx, rmat.data());
+Matrix4fc smat;
+Matrix4fc rmat;
+Matrix4fc tmat;
+Matrix4fc perspective_mat;
+Matrix4fc camera_mat;
+Matrix4fc world_mat;
+Matrix4fc pers_view_mat;
+
 //static GLint a_position_location;
 //static GLint a_texture_coordinates_location;
 //static GLint u_texture_unit_location;
@@ -116,18 +129,18 @@ static RenderUnit objobj;
 /* A simple function that prints a message, the error code returned by SDL,
  * and quits the application */
 
-static void checkSDLError(int line = -1)
-{
-#ifndef NDEBUG
-	const char *error = SDL_GetError();
-	if (*error != '\0') {
-		LOG_PRINT("SDL_LOG", "SDL Error: %s\n", error);
-		if (line != -1)
-			LOG_PRINT("SDL_LOG", " + line: %i\n", line);
-		SDL_ClearError();
-	}
-#endif
-}
+//static void checkSDLError(int line = -1)
+//{
+//#ifndef NDEBUG
+//	const char *error = SDL_GetError();
+//	if (*error != '\0') {
+//		LOG_PRINT("SDL_LOG", "SDL Error: %s\n", error);
+//		if (line != -1)
+//			LOG_PRINT("SDL_LOG", " + line: %i\n", line);
+//		SDL_ClearError();
+//	}
+//#endif
+//}
 
 static void create_shaders(void)
 {
@@ -162,7 +175,8 @@ void Init_GL()
 
 //    const char pFileName[] = "./model/cow.dae";
     const char pFileName[] = "model/dummy_rig.dae";
-//    const char pFileName[] = "model/simple_debug.dae";
+//    const char pFileName[] = "model/WAR.dae";
+//    const char pFileName[] = "model/cube.obj";
 
     string fileData = fileToString(pFileName);
 //    LOG_PRINT("SDL_LOG", "%d\n", fileData.size());
@@ -177,31 +191,34 @@ void Init_GL()
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
     //glEnable(GL_LIGHTING);
+    direction = Vector3f(0.0f, 5.0f - (-5.0f), 0.0f - 5.0f);
+	camera_pos = Vector3f(0.0f, -10.0f, 5.0f);
+	up = Vector3f(0.0f, 0.0f, 1.0f);
+	camera_mat = camera_matrix(direction, camera_pos, up);
+
+
+//    smat = scale_matrix(0.3f);
+//    tmat = translation_matrix(0.0f, 5.0f, 0.0f);
+	smat = scale_matrix((GLfloat)3.0 / objobj.mBoundingBox.diameter());
+//	LOG_PRINT("SDL_LOG", "%f\n", objobj.mBoundingBox.diameter());
+	tmat = translation_matrix(-objobj.mBoundingBox.center()(0), -objobj.mBoundingBox.center()(1), -objobj.mBoundingBox.center()(2));
+    perspective_mat = perspective_matrix((GLfloat) 3.14f * (GLfloat) 0.25f, (GLfloat) screen_width / (GLfloat) screen_height, (GLfloat) 0.01f, (GLfloat) 1000.0f);
+
+    programobj.Use();
 }
 
 void Render_GL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    programobj.Use();
 
-    Matrix<GLfloat, 3, 1, ColMajor > direction(0.0f, 5.0f - (-5.0f), 0.0f - 5.0f), camera_pos(0.0f, -5.0f, 5.0f), up(0.0f, 0.0f, 1.0f);
+    rmat = rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx);
+    world_mat = smat * rmat * tmat;
+    pers_view_mat = perspective_mat * camera_mat * world_mat;
 
 
-    //  scale_matrix(0.5f, smat.data());
-    //  rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx, rmat.data());
-    Matrix4fc smat = scale_matrix(0.3f);
-//    scale_matrix(smat, 0.3f, 0.3f, 0.3f);
-    Matrix4fc rmat = rotation_matrix(0.0f, 0.0f, 1.0f, view_rotx);
-//    rotation_matrix(rmat, 1.0f, 1.0f, 1.0f, view_rotx);
-    Matrix4fc tmat = translation_matrix(0.0f, 5.0f, 0.0f);
-    Matrix4fc perspective_mat = perspective_matrix((GLfloat) 3.14f * (GLfloat) 0.25f, (GLfloat) screen_width / (GLfloat) screen_height, (GLfloat) 0.01f, (GLfloat) 1000.0f);
-    Matrix4fc camera_mat = camera_matrix(direction, camera_pos, up);
-    Matrix4fc world_mat = tmat * smat * rmat;
-    Matrix4fc pers_view_mat = perspective_mat * camera_mat * world_mat;
     glUniformMatrix4fv(u_matrix, 1, GL_FALSE, pers_view_mat.data());
     glUniformMatrix4fv(u_world_mat, 1, GL_FALSE, world_mat.data());
-
 
 //    texobj.Bind();
 //    meshobj.Render();
@@ -251,7 +268,7 @@ int main(int argc, char * argv[])
     Init_GL();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
-    const GLfloat kTimePerTick = 1 / 60.0f;
+    const GLfloat kTimePerTick = 1 / 30.0f;
     bool exit = false;
     while (!exit) {
         SDL_PumpEvents();

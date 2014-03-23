@@ -72,13 +72,15 @@ GLuint LoadShaderMemory(string vertexString, string fragmentString)
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
 
-    /* test setting attrib locations */
+
+    //hard code attrib locations
     glBindAttribLocation(program, 0, "a_Position");
     glBindAttribLocation(program, 1, "a_Normal");
     glBindAttribLocation(program, 2, "a_TextureCoordinates");
     glBindAttribLocation(program, 3, "a_boneIds");
     glBindAttribLocation(program, 4, "a_boneWeights");
-    glLinkProgram(program); /* needed to put attribs into effect */
+
+    glLinkProgram(program);
 
     return program;
 }
