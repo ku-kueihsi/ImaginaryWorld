@@ -9,11 +9,12 @@
 #define	__PLATFORM_GL_H__
 
 #ifdef __ANDROID__
-
 #ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES
 #endif
 #include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2platform.h>
 #include <android/log.h>
 
 #ifndef NDEBUG

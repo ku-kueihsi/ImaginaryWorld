@@ -18,7 +18,8 @@
 #include <assimp/postprocess.h> // Post processing flags
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_opengles2.h"
+//#include "SDL2/SDL_opengl.h"
+//#include "SDL2/SDL_opengles2.h"
 #include "gl_tools.h"
 #include "data_utils.h"
 #include "image.h"
@@ -133,7 +134,9 @@ static void create_shaders(void)
 //    GLint stat;
 
     string vstr = fileToString("shader/daeVertex.glsl");
-    string fstr = fileToString("shader/daeFragment.glsl");
+//    string fstr = fileToString("shader/daeFragment.glsl");
+//    string vstr = fileToString("shader/simplevert.glsl");
+    string fstr = fileToString("shader/simplefrag.glsl");
 //    string vstr = fileToString("/sdcard/Download/shader/simplevert2.glsl");
 //    string fstr = fileToString("/sdcard/Download/shader/simplefrag2.glsl");
 
@@ -216,7 +219,7 @@ int main(int argc, char * argv[])
     SDL_Init(SDL_INIT_VIDEO);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 //	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, WINWIDTH, WINHEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", 0, 0, 0, 0, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
     //auto window = SDL_CreateWindow("SDL 2.0 Android Tutorial", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -228,7 +231,7 @@ int main(int argc, char * argv[])
     }
 
 	SDL_GetWindowSize(window, &winWidth, &winHeight);
-	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
+//	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
 
     auto glcontext = SDL_GL_CreateContext(window);
 
@@ -239,9 +242,8 @@ int main(int argc, char * argv[])
     }
 //    checkSDLError(__LINE__);
 
-	// raw gl code
-	glGetString(GL_VERSION);
 	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_VERSION));
+	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 
     Init_GL();

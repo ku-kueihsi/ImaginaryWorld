@@ -18,7 +18,7 @@
 #include <assimp/postprocess.h> // Post processing flags
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_opengles2.h"
+//#include "SDL2/SDL_opengles2.h"
 #include "gl_tools.h"
 #include "data_utils.h"
 

@@ -2,10 +2,10 @@
 
 #if IW_GL_ES 
 //OpenGL ES 2.0
+//#extension GL_EXT_separate_shader_objects : enable
+//#extension GL_ARB_separate_shader_objects : enable
 //precision mediump float;
 precision lowp float;
-#extension GL_EXT_separate_shader_objects : enable
-#extension GL_ARB_separate_shader_objects : enable
 #ifdef GL_EXT_separate_shader_objects
 #define UseLayout(x) layout(location = x)
 #else
@@ -25,14 +25,14 @@ precision lowp float;
 #define highp
 #endif
 
-UseLayout(0) IN vec3 a_Position;
-UseLayout(1) IN vec3 a_Normal;
-UseLayout(2) IN vec2 a_TextureCoordinates;
-UseLayout(3) IN vec3 a_boneIds;
-UseLayout(4) IN vec3 a_boneWeights;
+attribute vec3 a_Position;
+attribute vec3 a_Normal;
+attribute vec2 a_TextureCoordinates;
+attribute vec3 a_boneIds;
+attribute vec3 a_boneWeights;
 
 const int kMaxBoneWeights = 3;
-const int kMaxBones = 100;
+const int kMaxBones = 50;
 
 uniform mat4 modelviewProjection;
 uniform mat4 world_mat;

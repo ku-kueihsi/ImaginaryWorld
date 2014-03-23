@@ -1,21 +1,24 @@
-#define IW_GL_ES 1
+//#define IW_GL_ES 1
 
-#if IW_GL_ES 
+//#if IW_GL_ES
+ 
+////OpenGL ES 2.0
+//#version 100
+//#extension GL_EXT_separate_shader_objects : enable
+//#extension GL_ARB_separate_shader_objects : enable
 //precision mediump float;
 precision lowp float;
-#extension GL_EXT_separate_shader_objects : enable
-#extension GL_ARB_separate_shader_objects : enable
 #define IN varying
 
-#else //PC GL 330+
+//#else //PC GL 330+
 
-#version 330
-#define IN in
-#define lowp
-#define mediump
-#define highp
+//#version 330
+//#define IN in
+//#define lowp
+//#define mediump
+//#define highp
 
-#endif
+//#endif
 
 uniform sampler2D u_TextureUnit;
 IN vec2 v_TextureCoordinates;
@@ -28,12 +31,12 @@ void main()
     float DiffuseFactor = dot(normalize(v_Normal), normalize(vec3(1.0f, -1.0f, 1.0f)));
     vec4 DiffuseColor;                                                              
                                                                                     
-    if (DiffuseFactor > 0) {                                                        
+//    if (DiffuseFactor > 0) {                                                        
         DiffuseColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * DiffuseFactor;                                               
-    }                                                                               
-    else {                                                                          
-        DiffuseColor = vec4(0.0, 0.0, 0.0, 0.0);                                            
-    } 
+//    }                                                                               
+//    else {                                                                          
+//        DiffuseColor = vec4(0.0, 0.0, 0.0, 0.0);                                            
+//    } 
     gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates) * (DiffuseColor + vec4(0.1f, 0.1f, 0.1f, 0.0f));
 //    gl_FragColor = debugColor;
 //    gl_FragColor = vec4(1,1,1,1);
