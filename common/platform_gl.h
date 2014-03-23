@@ -19,7 +19,7 @@
 #ifndef NDEBUG
 #define LOG_PRINT(title, fmt, args...) __android_log_print(ANDROID_LOG_DEBUG, title, fmt, ##args)
 #else
-#define LOG_PRINT(title, format, x)
+#define LOG_PRINT(title, fmt, args...)
 #endif //NDEBUG
 
 #define ASSERT(cond) ((cond)?(void)0:__android_log_assert("##cond", "assert", ""))

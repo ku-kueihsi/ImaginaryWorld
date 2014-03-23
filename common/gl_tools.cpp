@@ -1,10 +1,17 @@
 #include "gl_tools.h"
 #include "data_utils.h"
 #include "platform_gl.h"
+
 namespace glTools{
 using namespace std;
 using namespace Eigen;
 #define EPS 0.00001
+
+void die(const char *msg)
+{
+	LOG_PRINT("SDL_LOG", "%s\n", msg);
+	exit(1);
+}
 
 GLuint LoadShaderMemory(string vertexString, string fragmentString)
 {
@@ -27,7 +34,7 @@ GLuint LoadShaderMemory(string vertexString, string fragmentString)
     GLuint vertexShader, fragmentShader;
     GLint stat;
 
-    LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
+//    LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
 
     const GLchar *kVertexShader = vertexString.c_str();
     const GLchar *kFragmentShader = fragmentString.c_str();
@@ -36,22 +43,31 @@ GLuint LoadShaderMemory(string vertexString, string fragmentString)
     glShaderSource(vertexShader, 1, (const GLchar **) &kVertexShader, NULL);
     glCompileShader(vertexShader);
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &stat);
-    if (!stat) {
-        LOG_PRINT("SDL_LOG", "Error: vertex shader did not compile!\n");
-        LOG_PRINT("SDL_LOG", "%s\n", vertexString.c_str());
-        exit(1);
+    if (stat == GL_FALSE)
+    {
+    	LOG_PRINT("SDL_LOG", "Error: Vertex shader compiling\n");
+    	GLsizei iLength, slen = 0;
+    	glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &iLength);
+    	GLchar* compiler_log = new GLchar[iLength];
+    	glGetShaderInfoLog(vertexShader, iLength, &slen, compiler_log);
+    	LOG_PRINT("SDL_LOG", "%s\n", compiler_log);
+    	delete[] compiler_log;
     }
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, (const GLchar **) &kFragmentShader, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &stat);
-    if (!stat) {
-    	LOG_PRINT("SDL_LOG", "Error: fragment shader did not compile!\n");
-    	LOG_PRINT("SDL_LOG", "%s\n", kFragmentShader);
-        exit(1);
+    if (stat == GL_FALSE)
+    {
+    	LOG_PRINT("SDL_LOG", "Error: Fragment shader compiling\n");
+    	GLsizei iLength, slen = 0;
+    	glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &iLength);
+    	GLchar* compiler_log = new GLchar[iLength];
+    	glGetShaderInfoLog(vertexShader, iLength, &slen, compiler_log);
+    	LOG_PRINT("SDL_LOG", "%s\n", compiler_log);
+    	delete[] compiler_log;
     }
-
     GLuint program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
@@ -64,7 +80,7 @@ GLuint LoadShader(string vertexFileName, string fragmentFileName) {
 	string fragmentString = fileToString(fragmentFileName);
 
 	//LOG_PRINT("SDL_LOG", "%s\n%s\n", vertexFileName.c_str(), vertexString.c_str());
-	LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
+//	LOG_PRINT("SDL_LOG", "%d,%d\n", vertexString.size(), fragmentString.size());
     return LoadShaderMemory(vertexString, fragmentString);
 }
 

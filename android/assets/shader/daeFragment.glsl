@@ -1,9 +1,10 @@
-#define GL_ES 1
+#define IW_GL_ES 1
 
-#if GL_ES 
+#if IW_GL_ES 
 //precision mediump float;
 precision lowp float;
 #extension GL_EXT_separate_shader_objects : enable
+#extension GL_ARB_separate_shader_objects : enable
 #define IN varying
 
 #else //PC GL 330+

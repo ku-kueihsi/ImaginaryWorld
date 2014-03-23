@@ -39,11 +39,17 @@ namespace glTools {
 //}
 
 string fileToString(string fileName){
-	return fileToString(fileName.c_str());
-}
+	//in android, SDL does not handle "//" ot "/" automatically
+	string target("//");
+	for (int i = 0; i < 1000; ++i){
+		size_t pos = fileName.find("//");
+		if (string::npos == pos){
+			break;
+		}
+		fileName.replace(pos, 2, "/");
+	}
 
-string fileToString(const char *fileName){
-	SDL_RWops *file = SDL_RWFromFile(fileName, "r");
+	SDL_RWops *file = SDL_RWFromFile(fileName.c_str(), "r");
 	size_t len = SDL_RWseek(file, 0, SEEK_END);
 	SDL_RWseek(file, 0, SEEK_SET);
 	string fileString;
@@ -52,6 +58,10 @@ string fileToString(const char *fileName){
 	fileString[len] = '\0';
 	SDL_RWclose(file);
 	return fileString;
+}
+
+string fileToString(const char *fileName){
+	return fileToString(string(fileName));
 }
 
 }

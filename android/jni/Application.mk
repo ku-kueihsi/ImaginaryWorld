@@ -13,11 +13,12 @@ APP_PLATFORM                    := android-19
 #APP_CFLAGS    += -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE
 #APP_CPPFLAGS  += -O2 -std=c++11
 #APP_CPPFLAGS  += -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE
-##for debugging
+##for debugging, (debug mode prevent shader from compiling, disabled by default)
 APP_OPTIM := debug
  
-OPT_FLAGS := -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE -DEIGEN_MPL2_ONLY 
-APP_CFLAGS    += -Wall -Wextra -O3 -std=c99
+OPT_FLAGS := -mtune=cortex-a9 -march=armv7-a -mhard-float -mfloat-abi=softfp -mfpu=vfpv3-d16 -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -DANDROID -Wa,--noexecstack -gdwarf-2 -marm -fno-omit-frame-pointer -Wall -W -D_REENTRANT -fPIE -DEIGEN_MPL2_ONLY
+OPT_FLAGS += -O3
+APP_CFLAGS    += -std=c99
 APP_CFLAGS    += $(OPT_FLAGS)
-APP_CPPFLAGS  += -O3 -std=c++11
+APP_CPPFLAGS  += -std=c++11
 APP_CPPFLAGS  += $(OPT_FLAGS)

@@ -114,12 +114,6 @@ static RenderUnit objobj;
 
 /* A simple function that prints a message, the error code returned by SDL,
  * and quits the application */
-static void sdldie(const char *msg)
-{
-	LOG_PRINT("SDL_LOG", "%s: %s\n", msg, SDL_GetError());
-	SDL_Quit();
-	exit(1);
-}
 
 static void checkSDLError(int line = -1)
 {
@@ -138,15 +132,10 @@ static void create_shaders(void)
 {
 //    GLint stat;
 
-//    string vstr = fileToString("shader/daeVertex.glsl");
-//    string fstr = fileToString("shader/daeFragment.glsl");
-	string vstr = fileToString("shader/simplevert.glsl");
-	string fstr = fileToString("shader/simplefrag.glsl");
-
-    LOG_PRINT("SDL_LOG", "%d\n", vstr.size());
-    LOG_PRINT("SDL_LOG", "%d\n", fstr.size());
-    LOG_PRINT("SDL_LOG", "%s\n", vstr.c_str());
-    LOG_PRINT("SDL_LOG", "%s\n", fstr.c_str());
+    string vstr = fileToString("shader/daeVertex.glsl");
+    string fstr = fileToString("shader/daeFragment.glsl");
+//    string vstr = fileToString("/sdcard/Download/shader/simplevert2.glsl");
+//    string fstr = fileToString("/sdcard/Download/shader/simplefrag2.glsl");
 
     programobj.Load(vstr, fstr);
 }
@@ -172,11 +161,12 @@ void Init_GL()
 //    const char pFileName[] = "model/simple_debug.dae";
 
     string fileData = fileToString(pFileName);
+//    LOG_PRINT("SDL_LOG", "%d\n", fileData.size());
 
-//    objobj.setResourcePath("texture/");
-//    objobj.InitFromMemory(fileData);
-//    objobj.SetShaderIndex(programobj.GetId());
-//    objobj.SetUpShader();
+    objobj.setResourcePath("texture/");
+    objobj.InitFromMemory(fileData);
+    objobj.SetShaderIndex(programobj.GetId());
+    objobj.SetUpShader();
 
     glEnable(GL_DEPTH_TEST);
 //    glFrontFace(GL_CW);
@@ -245,8 +235,9 @@ int main(int argc, char * argv[])
     if (!glcontext){
     	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_VERSION));
     	LOG_PRINT("SDL_LOG", "OpenGL version too low.\n");
+    	die("can not get glcontext");
     }
-    checkSDLError(__LINE__);
+//    checkSDLError(__LINE__);
 
 	// raw gl code
 	glGetString(GL_VERSION);
@@ -254,75 +245,75 @@ int main(int argc, char * argv[])
 
 
     Init_GL();
-//
-//    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
-//    const GLfloat kTimePerTick = 1 / 60.0f;
-//    bool exit = false;
-//    while (!exit) {
-//        SDL_PumpEvents();
-//
-//        SDL_Event event;
-//        while (SDL_PollEvent(&event)) {
-//            switch (event.type) {
-//            case SDL_KEYDOWN:
-//            {
-//                //                    {
-//                //                        //checks if a key is being remapped and prints what the remapping is
-//                //                        if (event.key.keysym.scancode != SDL_GetScancodeFromKey(event.key.keysym.sym)) {
-//                //                            printf("Physical %s key acting as %s key",
-//                //                                    SDL_GetScancodeName(event.key.keysym.scancode),
-//                //                                    SDL_GetKeyName(event.key.keysym.sym));
-//                //                            exit = true;
-//                //                        }
-//                //                    }
-//                //                    printf("Physical %s key acting as %s key",
-//                //                            SDL_GetScancodeName(event.key.keysym.scancode),
-//                //                            SDL_GetKeyName(event.key.keysym.sym));
-//                //                    //                    if (event.key.keysym.sym == SDLK_ESCAPE) {
-//                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-//                    exit = true;
-//                }else if (event.key.keysym.scancode == SDL_SCANCODE_D) {
-//                    view_rotx += 3.14 / 10;
-//                }else if (event.key.keysym.scancode == SDL_SCANCODE_A) {
-//                    view_rotx -= 3.14 / 10;
-//                }
-//                break;
-//            }
-//            case SDL_FINGERDOWN:
-//            {
-//            	view_rotx += 3.14 / 10;
-//            	break;
-//            }
-//            case SDL_QUIT:
-//            {
-//                exit = true;
-//                break;
-//            }
-//            default:
-//            {
-//                break;
-//            }
-//            }
-//        }
-//        std::chrono::time_point<std::chrono::high_resolution_clock> currentTime = std::chrono::high_resolution_clock::now();
-//        std::chrono::duration<double> deltaTime = lastTime - currentTime;
-//        std::chrono::duration<double> tmp(kTimePerTick);
-//        deltaTime += tmp;
-//        if (deltaTime.count() > 0){
-//            std::this_thread::sleep_for (deltaTime);
-//        }
-//        Render_GL();
-//        //        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-//        //        glClear(GL_COLOR_BUFFER_BIT);
-//        SDL_GL_SwapWindow(window);
-//        lastTime = currentTime;
-//    }
-//    //    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-//    //    glClear(GL_COLOR_BUFFER_BIT);
-//    //    SDL_GL_SwapWindow(window);
 
-    // done
-        SDL_Delay(2000);
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime = std::chrono::high_resolution_clock::now();
+    const GLfloat kTimePerTick = 1 / 60.0f;
+    bool exit = false;
+    while (!exit) {
+        SDL_PumpEvents();
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+            case SDL_KEYDOWN:
+            {
+                //                    {
+                //                        //checks if a key is being remapped and prints what the remapping is
+                //                        if (event.key.keysym.scancode != SDL_GetScancodeFromKey(event.key.keysym.sym)) {
+                //                            printf("Physical %s key acting as %s key",
+                //                                    SDL_GetScancodeName(event.key.keysym.scancode),
+                //                                    SDL_GetKeyName(event.key.keysym.sym));
+                //                            exit = true;
+                //                        }
+                //                    }
+                //                    printf("Physical %s key acting as %s key",
+                //                            SDL_GetScancodeName(event.key.keysym.scancode),
+                //                            SDL_GetKeyName(event.key.keysym.sym));
+                //                    //                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                    exit = true;
+                }else if (event.key.keysym.scancode == SDL_SCANCODE_D) {
+                    view_rotx += 3.14 / 10;
+                }else if (event.key.keysym.scancode == SDL_SCANCODE_A) {
+                    view_rotx -= 3.14 / 10;
+                }
+                break;
+            }
+            case SDL_FINGERDOWN:
+            {
+            	view_rotx += 3.14 / 10;
+            	break;
+            }
+            case SDL_QUIT:
+            {
+                exit = true;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+            }
+        }
+        std::chrono::time_point<std::chrono::high_resolution_clock> currentTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> deltaTime = lastTime - currentTime;
+        std::chrono::duration<double> tmp(kTimePerTick);
+        deltaTime += tmp;
+        if (deltaTime.count() > 0){
+            std::this_thread::sleep_for (deltaTime);
+        }
+        Render_GL();
+        //        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        //        glClear(GL_COLOR_BUFFER_BIT);
+        SDL_GL_SwapWindow(window);
+        lastTime = currentTime;
+    }
+//    glClearColor(0.0f, 0.0f, 0.8f, 1.0f);
+//    glClear(GL_COLOR_BUFFER_BIT);
+//    SDL_GL_SwapWindow(window);
+//
+//    // done
+//        SDL_Delay(2000);
     SDL_GL_DeleteContext(glcontext);
     SDL_DestroyWindow(window);
     SDL_Quit();

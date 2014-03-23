@@ -37,17 +37,17 @@ enum DB_TYPES {
 class ShaderProgram{
 public:
     ShaderProgram();
-    ShaderProgram(const std::string &vertexStr, const std::string &fragmentStr);
+    ShaderProgram(std::string vertexStr, std::string fragmentStr);
     virtual ~ShaderProgram();
     void Clear();
-    void Load(const std::string &vertexStr, const std::string &fragmentStr);
+    void Load(std::string vertexStr, std::string fragmentStr);
     void Use();
     GLuint GetId(){return mProgramId;}
     
 private:
     GLuint mProgramId;
-    GLuint mVertexShaderId;
-    GLuint mFragmentShaderId;
+//    GLuint mVertexShaderId;
+//    GLuint mFragmentShaderId;
     
 };
 
@@ -57,10 +57,10 @@ class Texture {
     //
 public:
     Texture(GLenum textureType = GL_TEXTURE_2D);
-    Texture(const std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
+    Texture(std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
     virtual ~Texture();
     void Bind(GLenum channel = GL_TEXTURE0);
-    void Load(const std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
+    void Load(std::string pngFileName, GLenum textureType = GL_TEXTURE_2D);
     void Clear();
     
 private:
@@ -73,20 +73,20 @@ private:
 //{
 //public:
 //    BoneAnimation();
-//    BoneAnimation(const std::string &name, \
-//         const GLMatrix4f &baseTransformation, \
-//         const std::vector<TranslationSample> &translationSamples, \
-//         const std::vector<QuaternionSample> &quaternionSamples, \
-//         const std::vector<ScaleSample> &scaleSamples);
+//    BoneAnimation(std::string name, \
+//         GLMatrix4f baseTransformation, \
+//         std::vector<TranslationSample> translationSamples, \
+//         std::vector<QuaternionSample> quaternionSamples, \
+//         std::vector<ScaleSample> scaleSamples);
 //    virtual ~BoneAnimation();
-//    void Init(const std::string &name, \
-//            const GLMatrix4f &baseTransformation, \
-//            const std::vector<TranslationSample> &translationSamples, \
-//            const std::vector<QuaternionSample> &quaternionSamples, \
-//            const std::vector<ScaleSample> &scaleSamples);
+//    void Init(std::string name, \
+//            GLMatrix4f baseTransformation, \
+//            std::vector<TranslationSample> translationSamples, \
+//            std::vector<QuaternionSample> quaternionSamples, \
+//            std::vector<ScaleSample> scaleSamples);
 //    void SetParentIndex(GLuint index);
 //    void Clear();
-//    void GetTransformation(GLMatrix4f &transformation, const GLMatrix4f &parentTransformation = GLMatrix4f::Identity());
+//    void GetTransformation(GLMatrix4f &transformation, GLMatrix4f &parentTransformation = GLMatrix4f::Identity());
 ////private:
 //    std::string mBoneName;
 //    GLuint mParentIndex;
@@ -120,32 +120,32 @@ class Mesh
 public:
     Mesh();
     Mesh(
-            const std::vector<GLfloat>& positions,
-            const std::vector<GLfloat>& normals,
-            const std::vector<GLfloat>& textureCoordinates,
-            const std::vector<GLubyte> &boneIds,
-            const std::vector<GLfloat> &boneWeights,
-            const std::vector<GLuint>& indices,
+            std::vector<GLfloat> positions,
+            std::vector<GLfloat> normals,
+            std::vector<GLfloat> textureCoordinates,
+            std::vector<GLubyte> boneIds,
+            std::vector<GLfloat> boneWeights,
+            std::vector<GLuint> indices,
             GLuint materialIndex = 0,
             GLenum usage = GL_STATIC_DRAW
             );
     virtual ~Mesh();
     void Init(
-            const std::vector<GLfloat>& positions,
-            const std::vector<GLfloat>& normals,
-            const std::vector<GLfloat>& textureCoordinates,
-            const std::vector<GLubyte> &boneIds,
-            const std::vector<GLfloat> &boneWeights,
-            const std::vector<GLuint>& indices,
+            std::vector<GLfloat> positions,
+            std::vector<GLfloat> normals,
+            std::vector<GLfloat> textureCoordinates,
+            std::vector<GLubyte> boneIds,
+            std::vector<GLfloat> boneWeights,
+            std::vector<GLuint> indices,
             GLuint materialIndex = 0,
             GLenum usage = GL_STATIC_DRAW
             );
-//    void Init(const std::vector<GLfloat > &poistions,
-//              const std::vector<GLfloat > &normals,
-//              const std::vector<GLfloat > &textureCoordinates,
-//              const std::vector<GLubyte > &boneIds,
-//              const std::vector<GLfloat > &boneWeights,
-//              const std::vector<GLuint > &indices,
+//    void Init(std::vector<GLfloat > poistions,
+//              std::vector<GLfloat > normals,
+//              std::vector<GLfloat > textureCoordinates,
+//              std::vector<GLubyte > boneIds,
+//              std::vector<GLfloat > boneWeights,
+//              std::vector<GLuint > indices,
 //              GLuint materialIndex = 0,
 //              GLenum usage = GL_STATIC_DRAW
 //            );
@@ -233,7 +233,7 @@ public:
     void InitAction(const aiScene *pScene);
     void Init(const aiScene *pScene);
     void UpdateAnimation(GLfloat time);
-    void UpdateAnimationRecursive(UnitNode *pNode, const GLMatrix4f &parentTransformation, GLfloat time);
+    void UpdateAnimationRecursive(UnitNode *pNode, GLMatrix4f parentTransformation, GLfloat time);
     void Clear();
 
     std::unordered_map<std::string, GLubyte> mAnimationMap;
@@ -252,7 +252,7 @@ class RenderUnit
 public:
     RenderUnit();
     virtual ~RenderUnit();
-    void InitFromMemory(const std::string &fileData);
+    void InitFromMemory(std::string fileData);
     void Clear();
     void DrawOn();//draw core part
     void Render();//full render function

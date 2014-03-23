@@ -28,6 +28,8 @@
 
 namespace glTools{
 
+void die(const char *msg);
+
 GLuint LoadShaderMemory(std::string vertexString, std::string fragmentString);
 GLuint LoadShader(std::string vertexFileName, std::string fragmentFileName);
 

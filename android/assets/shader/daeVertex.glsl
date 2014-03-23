@@ -1,10 +1,11 @@
-#define GL_ES 1
+#define IW_GL_ES 1
 
-#if GL_ES 
+#if IW_GL_ES 
 //OpenGL ES 2.0
 //precision mediump float;
 precision lowp float;
 #extension GL_EXT_separate_shader_objects : enable
+#extension GL_ARB_separate_shader_objects : enable
 #ifdef GL_EXT_separate_shader_objects
 #define UseLayout(x) layout(location = x)
 #else

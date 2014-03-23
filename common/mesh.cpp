@@ -11,7 +11,7 @@ using namespace glTools;
 #define SAFE_CLEAR(v) if (v.size() > 0) { v.clear(); } 
 #define MAX_BONE_WEIGHTS 3
 
-void GLMatrix4fFromAssimp(GLMatrix4f &GLm, const aiMatrix4x4 &aim)
+void GLMatrix4fFromAssimp(GLMatrix4f &GLm, aiMatrix4x4 aim)
 {
     GLm(0, 0) = aim.a1;
     GLm(0, 1) = aim.a2;
@@ -31,7 +31,7 @@ void GLMatrix4fFromAssimp(GLMatrix4f &GLm, const aiMatrix4x4 &aim)
     GLm(3, 3) = aim.d4;
 }
 
-void GLMatrix3fFromAssimp(GLMatrix4f &GLm, const aiMatrix3x3 &aim)
+void GLMatrix3fFromAssimp(GLMatrix4f &GLm, aiMatrix3x3 aim)
 {
     GLm(0, 0) = aim.a1;
     GLm(0, 1) = aim.a2;
@@ -44,14 +44,14 @@ void GLMatrix3fFromAssimp(GLMatrix4f &GLm, const aiMatrix3x3 &aim)
     GLm(2, 2) = aim.c3;
 }
 
-void GLVector3fFromAssimp(GLVector3f &GLv, const aiVector3D &aiv)
+void GLVector3fFromAssimp(GLVector3f &GLv, aiVector3D aiv)
 {
     GLv(0) = aiv.x;
     GLv(1) = aiv.y;
     GLv(2) = aiv.z;
 }
 
-void GLQuaternionfFromAssimp(GLQuaternionf &GLq, const aiQuaternion &aiq)
+void GLQuaternionfFromAssimp(GLQuaternionf &GLq, aiQuaternion aiq)
 {
     GLq.w() = aiq.w;
     GLq.x() = aiq.x;
@@ -60,17 +60,17 @@ void GLQuaternionfFromAssimp(GLQuaternionf &GLq, const aiQuaternion &aiq)
 }
 
 ShaderProgram::ShaderProgram() :
-mProgramId(0),
-mVertexShaderId(0),
-mFragmentShaderId(0)
+mProgramId(0)
+//mVertexShaderId(0),
+//mFragmentShaderId(0)
 {
 
 }
 
-ShaderProgram::ShaderProgram(const string& vertexStr, const string& fragmentStr):
-mProgramId(0),
-mVertexShaderId(0),
-mFragmentShaderId(0)
+ShaderProgram::ShaderProgram(string vertexStr, string fragmentStr):
+mProgramId(0)
+//mVertexShaderId(0),
+//mFragmentShaderId(0)
 {
     Load(vertexStr, fragmentStr);
 }
@@ -82,18 +82,35 @@ ShaderProgram::~ShaderProgram()
 
 void ShaderProgram::Clear()
 {
-    glDetachShader(mProgramId, mVertexShaderId);
-    glDetachShader(mProgramId, mFragmentShaderId);
-    glDeleteShader(mVertexShaderId);
-    glDeleteShader(mFragmentShaderId);
-    glDeleteProgram(mProgramId);
+	if (mProgramId){
+		GLuint shaders[2];
+		GLsizei count;
 
-    mVertexShaderId = 0;
-    mFragmentShaderId = 0;
+		glGetAttachedShaders(mProgramId, 2, &count, shaders);
+		if (glGetError()){
+			die("failed to get attached shaders");
+		}
+		if (count != 2){
+			die("unknown number of shaders returned");
+		}
+		if (shaders[0] == shaders[1]){
+			die("returned identical shaders");
+		}
+
+		for (int i = 0; i < count; i++)
+		{
+			if (shaders[i] == 0){
+				die("program return no shader");
+			}
+			glDetachShader(mProgramId, shaders[i]);
+			glDeleteShader(shaders[i]);
+		}
+		glDeleteProgram(mProgramId);
+	}
     mProgramId = 0;
 }
 
-void ShaderProgram::Load(const std::string& vertexStr, const std::string& fragmentStr)
+void ShaderProgram::Load(std::string vertexStr, std::string fragmentStr)
 {
     //construct shader program form the char data block in the memory
     //
@@ -117,44 +134,48 @@ void ShaderProgram::Load(const std::string& vertexStr, const std::string& fragme
     //    GLuint vertShader, fragShader;
     GLint stat;
 
-    const char *kVertexShader = vertexStr.c_str();
-    const char *kFragmentShader = fragmentStr.c_str();
-    //  cout << VertexShader << endl << FragmentShader << endl;
-    mVertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(mVertexShaderId, 1, (const char **) &kVertexShader, NULL);
-    glCompileShader(mVertexShaderId);
-    glGetShaderiv(mVertexShaderId, GL_COMPILE_STATUS, &stat);
-    assert(stat);
-    //    if (!stat) {
-    //        printf("Error: vertex shader did not compile!\n");
-    //        exit(1);
-    //    }
+    mProgramId = LoadShaderMemory(vertexStr, fragmentStr);
 
-    mFragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(mFragmentShaderId, 1, (const GLchar **) &kFragmentShader, NULL);
-    glCompileShader(mFragmentShaderId);
-    glGetShaderiv(mFragmentShaderId, GL_COMPILE_STATUS, &stat);
-    assert(stat);
-    //    if (!stat) {
-    //        printf("Error: fragment shader did not compile!\n");
-    //        exit(1);
-    //    }
-
-    mProgramId = glCreateProgram();
-    glAttachShader(mProgramId, mVertexShaderId);
-    glAttachShader(mProgramId, mFragmentShaderId);
+//    const char *kVertexShader = vertexStr.c_str();
+//    const char *kFragmentShader = fragmentStr.c_str();
+//    //  cout << VertexShader << endl << FragmentShader << endl;
+//    mVertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+//    glShaderSource(mVertexShaderId, 1, (const char **) &kVertexShader, NULL);
+//    glCompileShader(mVertexShaderId);
+//    glGetShaderiv(mVertexShaderId, GL_COMPILE_STATUS, &stat);
+////    ASSERT(stat);
+//    if (!stat) {
+//        LOG_PRINT("SDL_LOG", "Error: vertex shader did not compile!\n");
+//        LOG_PRINT("SDL_LOG", "%s\n", kVertexShader);
+//        exit(1);
+//    }
+//
+//    mFragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+//    glShaderSource(mFragmentShaderId, 1, (const GLchar **) &kFragmentShader, NULL);
+//    glCompileShader(mFragmentShaderId);
+//    glGetShaderiv(mFragmentShaderId, GL_COMPILE_STATUS, &stat);
+////    ASSERT(stat);
+//    if (!stat) {
+//    	LOG_PRINT("SDL_LOG", "Error: fragment shader did not compile!\n");
+//    	LOG_PRINT("SDL_LOG", "%s\n", kFragmentShader);
+//    	exit(1);
+//    }
+//
+//    mProgramId = glCreateProgram();
+//    glAttachShader(mProgramId, mVertexShaderId);
+//    glAttachShader(mProgramId, mFragmentShaderId);
 
     glLinkProgram(mProgramId);
 
     glGetProgramiv(mProgramId, GL_LINK_STATUS, &stat);
-    assert(stat);
-    //    if (!stat) {
-    //        char log[1000];
-    //        GLsizei len;
-    //        glGetProgramInfoLog(program, 1000, &len, log);
-    //        printf("Error: linking:\n%s\n", log);
-    //        exit(1);
-    //    }
+//    ASSERT(stat == GL_TRUE);
+    if (stat == GL_FALSE) {
+    	char log[1000];
+    	GLsizei len;
+    	glGetProgramInfoLog(mProgramId, 1000, &len, log);
+    	LOG_PRINT("SDL_LOG", "Error: linking:\n%s\n", log);
+    	exit(1);
+    }
 }
 
 void ShaderProgram::Use()
@@ -169,7 +190,7 @@ mTextureType(textureType)
 {
 }
 
-Texture::Texture(const std::string pngFileName, GLenum textureType)
+Texture::Texture(std::string pngFileName, GLenum textureType)
 {
     Load(pngFileName, textureType);
 }
@@ -179,11 +200,12 @@ Texture::~Texture()
     Clear();
 }
 
-void Texture::Load(const std::string pngFileName, GLenum textureType)
+void Texture::Load(std::string pngFileName, GLenum textureType)
 {
     Clear();
-
+//    LOG_PRINT("SDL_LOG", "%s\n", pngFileName.c_str());
     string tmpStr = fileToString(pngFileName);
+//    LOG_PRINT("SDL_LOG", "%d\n", tmpStr.size());
     if (tmpStr.size() > 1) {
         mTextureObjectId = load_png_memory_into_texture(tmpStr);
     } else {
@@ -220,7 +242,7 @@ void Mesh::Clear()
     return;
 }
 
-inline void FillDataBuffer(GLuint bufferIndex, const vector<GLfloat > &data, GLenum usage)
+inline void FillDataBuffer(GLuint bufferIndex, vector<GLfloat > data, GLenum usage)
 {
     assert(bufferIndex);
     glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
@@ -228,7 +250,7 @@ inline void FillDataBuffer(GLuint bufferIndex, const vector<GLfloat > &data, GLe
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-inline void FillDataBuffer(GLuint bufferIndex, const vector<GLubyte > &data, GLenum usage)
+inline void FillDataBuffer(GLuint bufferIndex, vector<GLubyte > data, GLenum usage)
 {
     assert(bufferIndex);
     glBindBuffer(GL_ARRAY_BUFFER, bufferIndex);
@@ -238,12 +260,12 @@ inline void FillDataBuffer(GLuint bufferIndex, const vector<GLubyte > &data, GLe
 
 
 void Mesh::Init(
-        const std::vector<GLfloat>& positions,
-        const std::vector<GLfloat>& normals,
-        const std::vector<GLfloat>& textureCoordinates,
-        const std::vector<GLubyte> &boneIds,
-        const std::vector<GLfloat> &boneWeights,
-        const std::vector<GLuint>& indices,
+        std::vector<GLfloat> positions,
+        std::vector<GLfloat> normals,
+        std::vector<GLfloat> textureCoordinates,
+        std::vector<GLubyte> boneIds,
+        std::vector<GLfloat> boneWeights,
+        std::vector<GLuint> indices,
         GLuint materialIndex,
         GLenum usage
         )
@@ -290,12 +312,12 @@ void Mesh::Init(
     return;
 }
 
-//void Mesh::Init(const std::vector<GLfloat > &positions,
-//                const std::vector<GLfloat > &normals,
-//                const std::vector<GLfloat > &textureCoordinates,
-//                const std::vector<GLubyte > &boneIds,
-//                const std::vector<GLfloat > &boneWeights,
-//                const std::vector<GLuint > &indices, 
+//void Mesh::Init(std::vector<GLfloat > positions,
+//                std::vector<GLfloat > normals,
+//                std::vector<GLfloat > textureCoordinates,
+//                std::vector<GLubyte > boneIds,
+//                std::vector<GLfloat > boneWeights,
+//                std::vector<GLuint > indices,
 //                GLuint materialIndex, 
 //                GLenum usage)
 //{
@@ -335,12 +357,12 @@ void Mesh::Init(
 //}
 
 Mesh::Mesh(
-        const std::vector<GLfloat> &positions,
-        const std::vector<GLfloat> &normals,
-        const std::vector<GLfloat> &textureCoordinates,
-        const std::vector<GLubyte > &boneIds,
-        const std::vector<GLfloat > &boneWeights,
-        const std::vector<GLuint>& indices,
+        std::vector<GLfloat > positions,
+        std::vector<GLfloat > normals,
+        std::vector<GLfloat > textureCoordinates,
+        std::vector<GLubyte > boneIds,
+        std::vector<GLfloat > boneWeights,
+        std::vector<GLuint > indices,
         GLuint materialIndex,
         GLenum usage
         ){
@@ -435,7 +457,7 @@ void RenderUnit::Clear()
     //SAFE_CLEAR(mBoneMap);
 }
 
-void RenderUnit::InitFromMemory(const std::string &fileData)
+void RenderUnit::InitFromMemory(std::string fileData)
 {
     Clear();
     Assimp::Importer importer;
@@ -599,6 +621,7 @@ void RenderUnit::InitTextures(const aiScene* pScene)
 
             if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
                 string fullPath = mResourcePath + "/" + path.data;
+//                LOG_PRINT("SDL_LOG", "%s\n", fullPath.c_str());
                 pTmpTexture = new Texture(fullPath);
             }
             else{
@@ -701,12 +724,12 @@ mResourcePath("./")
 //}
 
 //void BoneAnimation::Init(
-//        const string &name,
-//        const GLMatrix4f &baseTransformation,
-//        const std::vector<TranslationSample> &translationSamples,
-//        const std::vector<QuaternionSample> &quaternionSamples,
-//        const std::vector<ScaleSample> &scaleSamples
-////        const std::vector<Bone *> &pChildren
+//        string &name,
+//        GLMatrix4f baseTransformation,
+//        std::vector<TranslationSample> translationSamples,
+//        std::vector<QuaternionSample> quaternionSamples,
+//        std::vector<ScaleSample> scaleSamples
+////        std::vector<Bone *> pChildren
 //        )
 //{
 //    Clear();
@@ -720,13 +743,13 @@ mResourcePath("./")
 //}
 
 //BoneAnimation::BoneAnimation(
-//        const std::string &name, \
-//        const GLMatrix4f &baseTransformation, \
-//        const std::vector<TranslationSample > &translationSamples, \
-//        const std::vector<QuaternionSample > &quaternionSamples, \
-//        const std::vector<ScaleSample > &scaleSamples
+//        std::string name, \
+//        GLMatrix4f baseTransformation, \
+//        std::vector<TranslationSample > translationSamples, \
+//        std::vector<QuaternionSample > quaternionSamples, \
+//        std::vector<ScaleSample > scaleSamples
 //        )
-//        //         const std::vector<Bone * > &pChildren \
+//        //         std::vector<Bone * > pChildren \
 ////        )
 //{
 //    Init(name, baseTransformation, translationSamples, quaternionSamples, scaleSamples);
@@ -1025,7 +1048,7 @@ void UnitTree::UpdateAnimation(GLfloat time)
     return;
 }
 
-void UnitTree::UpdateAnimationRecursive(UnitNode *pNode, const GLMatrix4f &parentTransformation, GLfloat time)
+void UnitTree::UpdateAnimationRecursive(UnitNode *pNode, GLMatrix4f parentTransformation, GLfloat time)
 {
     GLMatrix4f globalTransformation = parentTransformation * pNode->mTransformation;
     if (pNode->mHasNodeAnimation){
