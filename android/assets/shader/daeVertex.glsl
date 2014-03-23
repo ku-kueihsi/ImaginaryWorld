@@ -5,7 +5,7 @@
 //#extension GL_EXT_separate_shader_objects : enable
 //#extension GL_ARB_separate_shader_objects : enable
 //precision mediump float;
-precision lowp float;
+//precision lowp float;
 #ifdef GL_EXT_separate_shader_objects
 #define UseLayout(x) layout(location = x)
 #else
@@ -27,7 +27,7 @@ precision lowp float;
 
 attribute vec3 a_Position;
 attribute vec3 a_Normal;
-attribute vec2 a_TextureCoordinates;
+attribute lowp vec2 a_TextureCoordinates;
 attribute vec3 a_boneIds;
 attribute vec3 a_boneWeights;
 

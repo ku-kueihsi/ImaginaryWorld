@@ -34,6 +34,7 @@ LOCAL_SRC_FILES := 	SDL_android_main.c \
 
 LOCAL_STATIC_LIBRARIES := sdl assimp libpng freetype bulletSoftBody bulletDynamics bulletCollision linearMath
 LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv1_CM -lGLESv2 -lEGL -landroid
+#LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv2 -lEGL -landroid
 
 include $(BUILD_SHARED_LIBRARY)
 #$(call import-module,SDL)LOCAL_PATH := $(call my-dir)

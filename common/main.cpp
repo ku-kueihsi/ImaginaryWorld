@@ -19,7 +19,7 @@
 #include <eigen3/Eigen/Dense>
 #include "SDL2/SDL.h"
 //#include "SDL2/SDL_opengl.h"
-//#include "SDL2/SDL_opengles2.h"
+#include "SDL2/SDL_opengles2.h"
 #include "gl_tools.h"
 #include "data_utils.h"
 #include "image.h"
@@ -134,13 +134,14 @@ static void create_shaders(void)
 //    GLint stat;
 
     string vstr = fileToString("shader/daeVertex.glsl");
-//    string fstr = fileToString("shader/daeFragment.glsl");
+    string fstr = fileToString("shader/daeFragment.glsl");
 //    string vstr = fileToString("shader/simplevert.glsl");
-    string fstr = fileToString("shader/simplefrag.glsl");
+//    string fstr = fileToString("shader/simplefrag.glsl");
 //    string vstr = fileToString("/sdcard/Download/shader/simplevert2.glsl");
 //    string fstr = fileToString("/sdcard/Download/shader/simplefrag2.glsl");
 
     programobj.Load(vstr, fstr);
+
 }
 
 void Init_GL()
@@ -244,6 +245,7 @@ int main(int argc, char * argv[])
 
 	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_VERSION));
 	LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	//LOG_PRINT("SDL_LOG", "%s\n", glGetString(GL_EXTENSIONS));
 
 
     Init_GL();
