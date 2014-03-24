@@ -1,0 +1,8 @@
+LOCAL_PATH := $(call my-dir)
+
+#SDL
+include $(CLEAR_VARS)
+LOCAL_MODULE := sdl_image
+LOCAL_SRC_FILES := $(ANDROID_TOOLCHAIN)/lib/libSDL2_image.a
+LOCAL_EXPORT_C_INCLUDES := $(ANDROID_TOOLCHAIN)/include/SDL2/
+include $(PREBUILT_STATIC_LIBRARY)
