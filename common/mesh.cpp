@@ -66,18 +66,13 @@ GLuint textureFromFile(string fileName) {
 	fileName = correctPath(fileName);
 	LOG_PRINT("SDL_LOG", "%s\n", fileName.c_str());
 	SDL_RWops *fp = SDL_RWFromFile(fileName.c_str(), "r");
-	ASSERT(fp);
-	SDL_Surface *surface = IMG_Load_RW(fp, 1);
-	ASSERT(surface);
+	//ASSERT(fp);
+	SDL_Surface *surface = IMG_Load_RW(fp, 1); //1 mean fp is closed automatically
+	//ASSERT(surface);
 
 	glEnable(GL_TEXTURE_2D);
 
 	GLuint tid;
-	GLenum texture_format;
-	GLint ncolors;
-	/* Convert SDL_Surface to OpenGL Texture */
-
-	LOG_PRINT("SDL_LOG", "ncolors: %d\n", ncolors);
 
 	GLenum Mode = 0;
 	switch (surface->format->BytesPerPixel) {
@@ -113,11 +108,11 @@ GLuint textureFromFile(string fileName) {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glDisable(GL_TEXTURE_2D);
 	LOG_PRINT("SDL_LOG", "texture ID %d\n", tid);
-//	SDL_FreeSurface(surface);
-//	SDL_RWclose(fp);
+	SDL_FreeSurface(surface);
 	LOG_PRINT("SDL_LOG", "texture ID %d\n", tid);
-	glDisable(GL_TEXTURE_2D);
+
 	return tid;
 }
 
