@@ -13,6 +13,18 @@ void die(const char *msg)
 	exit(1);
 }
 
+string correctPath(string path){
+	string target("//");
+	for (int i = 0; i < 1000; ++i){
+		size_t pos = path.find("//");
+		if (string::npos == pos){
+			break;
+		}
+		path.replace(pos, 2, "/");
+	}
+	return path;
+}
+
 GLuint LoadShaderMemory(string vertexString, string fragmentString)
 {
     //

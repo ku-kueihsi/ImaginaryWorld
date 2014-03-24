@@ -2,6 +2,9 @@
 #include "image.h"
 #include "data_utils.h"
 #include "gl_tools.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_opengles2.h"
+#include "SDL2/SDL_image.h"
 
 using namespace std;
 using namespace Eigen;
@@ -57,6 +60,65 @@ void GLQuaternionfFromAssimp(GLQuaternionf &GLq, aiQuaternion aiq)
     GLq.x() = aiq.x;
     GLq.y() = aiq.y;
     GLq.z() = aiq.z;
+}
+
+GLuint textureFromFile(string fileName) {
+	fileName = correctPath(fileName);
+	LOG_PRINT("SDL_LOG", "%s\n", fileName.c_str());
+	SDL_RWops *fp = SDL_RWFromFile(fileName.c_str(), "r");
+	ASSERT(fp);
+	SDL_Surface *surface = IMG_Load_RW(fp, 1);
+	ASSERT(surface);
+
+	glEnable(GL_TEXTURE_2D);
+
+	GLuint tid;
+	GLenum texture_format;
+	GLint ncolors;
+	/* Convert SDL_Surface to OpenGL Texture */
+
+	LOG_PRINT("SDL_LOG", "ncolors: %d\n", ncolors);
+
+	GLenum Mode = 0;
+	switch (surface->format->BytesPerPixel) {
+	case 1: {
+		Mode = GL_ALPHA;
+		break;
+	}
+	case 3: {
+		Mode = GL_RGB;
+		break;
+	}
+	case 4: {
+		Mode = GL_RGBA;
+		break;
+	}
+	default: { break;
+	}
+	}
+
+	glGenTextures(1, &tid);
+	glBindTexture(GL_TEXTURE_2D, tid);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    LOG_PRINT("SDL_LOG", "%d,%d\n", surface->w, surface->h);
+    LOG_PRINT("SDL_LOG", "texture ID %d\n", tid);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, Mode, surface->w, surface->h, 0, Mode, GL_UNSIGNED_BYTE, surface->pixels);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	LOG_PRINT("SDL_LOG", "texture ID %d\n", tid);
+//	SDL_FreeSurface(surface);
+//	SDL_RWclose(fp);
+	LOG_PRINT("SDL_LOG", "texture ID %d\n", tid);
+	glDisable(GL_TEXTURE_2D);
+	return tid;
 }
 
 ShaderProgram::ShaderProgram() :
@@ -203,14 +265,16 @@ Texture::~Texture()
 void Texture::Load(std::string pngFileName, GLenum textureType)
 {
     Clear();
-//    LOG_PRINT("SDL_LOG", "%s\n", pngFileName.c_str());
-    string tmpStr = fileToString(pngFileName);
-//    LOG_PRINT("SDL_LOG", "%d\n", tmpStr.size());
-    if (tmpStr.size() > 1) {
-        mTextureObjectId = load_png_memory_into_texture(tmpStr);
-    } else {
-        mTextureObjectId = load_png_memory_into_texture(pngFileName);
-    }
+////    LOG_PRINT("SDL_LOG", "%s\n", pngFileName.c_str());
+//    string tmpStr = fileToString(pngFileName);
+////    LOG_PRINT("SDL_LOG", "%d\n", tmpStr.size());
+//    if (tmpStr.size() > 1) {
+//        mTextureObjectId = load_png_memory_into_texture(tmpStr);
+//    } else {
+//        mTextureObjectId = load_png_memory_into_texture(pngFileName);
+//    }
+//    mTextureType = textureType;
+    mTextureObjectId = textureFromFile(pngFileName);
     mTextureType = textureType;
     return;
 }

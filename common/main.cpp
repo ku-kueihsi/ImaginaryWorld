@@ -174,8 +174,8 @@ void Init_GL()
 //    texobj.Load("texture/dummy_white.png");
 
 //    const char pFileName[] = "./model/cow.dae";
-    const char pFileName[] = "model/dummy_rig.dae";
-//    const char pFileName[] = "model/WAR.dae";
+//    const char pFileName[] = "model/dummy_rig.dae";
+    const char pFileName[] = "model/ptest.dae";
 //    const char pFileName[] = "model/cube.obj";
 
     string fileData = fileToString(pFileName);

@@ -10,6 +10,11 @@ SDL
 License: zlib license
 http://www.libsdl.org/
 
+SDL_image
+License: zlib license
+https://www.libsdl.org/projects/SDL_image/
+Note: SDL_image uses JPEG 9d, libpng, libwebp, tiff, zlib. I checked all those libraries are zlib like. Correct me if I am wrong.
+
 freetype2
 License: The FreeType License (FTL) is the most commonly used one. It is a BSD-style license
 http://www.freetype.org/

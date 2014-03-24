@@ -5,6 +5,7 @@ include $(LOCAL_PATH)/assimp.mk
 include $(LOCAL_PATH)/libpng.mk
 include $(LOCAL_PATH)/freetype.mk
 include $(LOCAL_PATH)/sdl.mk
+include $(LOCAL_PATH)/sdl_image.mk
 include $(LOCAL_PATH)/bulletSoftBody.mk
 include $(LOCAL_PATH)/bulletDynamics.mk
 include $(LOCAL_PATH)/bulletCollision.mk
@@ -32,7 +33,7 @@ LOCAL_SRC_FILES := 	SDL_android_main.c \
 					$(COMMON)/mesh.cpp 
 					 
 
-LOCAL_STATIC_LIBRARIES := sdl assimp libpng freetype bulletSoftBody bulletDynamics bulletCollision linearMath
+LOCAL_STATIC_LIBRARIES := sdl_image sdl assimp libpng freetype bulletSoftBody bulletDynamics bulletCollision linearMath
 LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv1_CM -lGLESv2 -lEGL -landroid
 #LOCAL_LDLIBS 	:= -lz -lstdc++ -llog -lGLESv2 -lEGL -landroid
 
